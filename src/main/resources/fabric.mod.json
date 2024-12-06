@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "weapontroll",
+  "version": "${version}",
+  "name": "weapontroll",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/weapontroll/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "dev.wateralt.mc.weapontroll.client.WeapontrollClient"
+    ],
+    "main": [
+      "dev.wateralt.mc.weapontroll.Weapontroll"
+    ]
+  },
+  "mixins": [
+    "weapontroll.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${minecraft_version}"
+  }
+}
