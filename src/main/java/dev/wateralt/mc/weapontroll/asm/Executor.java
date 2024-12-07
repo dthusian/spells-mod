@@ -38,6 +38,16 @@ public class Executor {
     throwErr.accept(sb.toString());
   }
   
+  private static boolean iHateJava(Class<?> a, Class<?> b) {
+    if(a.isAssignableFrom(b)) {
+      return true;
+    }
+    if(a.isPrimitive() && a.getSimpleName().equalsIgnoreCase(b.getSimpleName())) {
+      return true;
+    }
+    return false;
+  }
+  
   public static Object[] execute(Program program, LivingEntity user, LivingEntity target, ServerWorld world, int instructionLimit) {
     int pc = 0;
     List<Instructions.Instr> instrs = program.getInstrs();
@@ -110,7 +120,7 @@ public class Executor {
             .get();
           int nParams;
           int paramOffset;
-          if(exec.getReturnType() == Void.class) {
+          if(exec.getReturnType() == void.class) {
             nParams = components.length;
             paramOffset = 0;
           } else {
@@ -121,7 +131,8 @@ public class Executor {
           execParams[0] = world;
           
           Class<?>[] execTypes = exec.getParameterTypes();
-          
+          assert execTypes[0] == ServerWorld.class;
+
           // typecheck and load args into execParams
           boolean wrongTypes = false; 
           for(int j = 0; j < nParams; j++) {
@@ -130,22 +141,22 @@ public class Executor {
             } else {
               execParams[j + 1] = componentValues[j + paramOffset];
             }
-            if(!execTypes[j].isAssignableFrom(execParams[j + 1].getClass())) {
+            if(!iHateJava(execTypes[j + 1], execParams[j + 1].getClass())) {
               wrongTypes = true;
             }
           }
           if(wrongTypes) {
-            Executor.incorrectTypes(throwErr, execParams);
+            Executor.incorrectTypes(throwErr, Arrays.copyOfRange(execParams, 1, execParams.length));
           }
           
           // execute and writeback
           Object ret;
           try {
-            ret = exec.invoke(execParams);
+            ret = exec.invoke(instr, execParams);
           } catch(Exception err) {
             throw new RuntimeException(err);
           }
-          if(exec.getReturnType() != Void.class) {
+          if(exec.getReturnType() != void.class) {
             slots[(Short)componentValues[0]] = ret;
           }
         }

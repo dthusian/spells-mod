@@ -17,7 +17,7 @@ public class Program {
     instrs = new ArrayList<>();
     for(int i = 0; i < lines.length; i++) {
       try {
-        instrs.set(i, Instructions.parse(lines[i]));
+        instrs.add(Instructions.parse(lines[i]));
       } catch(AsmError err) {
         throw new AsmError("at line %d: %s".formatted(i + 1, err.getMessage()));
       }

@@ -43,6 +43,7 @@ public abstract class ItemMixin {
           }
         } catch(Exception err) {
           Weapontroll.LOGGER.warn("Exception occurred while executing program: " + err);
+          err.printStackTrace();
         }
       }
     }

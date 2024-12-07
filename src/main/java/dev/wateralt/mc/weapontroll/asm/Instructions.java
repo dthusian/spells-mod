@@ -200,9 +200,9 @@ public class Instructions {
     for(int i = 0; i < paramTypes.length; i++) {
       if(paramTypes[i] == String.class) {
         params[i] = parts[i + 1];
-      } else if(paramTypes[i] == Short.class) {
+      } else if(paramTypes[i] == short.class) {
         params[i] = parseSlot(parts[i + 1]);
-      } else if(paramTypes[i] == Double.class) {
+      } else if(paramTypes[i] == double.class) {
         params[i] = parseDouble(parts[i + 1]);
       } else {
         throw new RuntimeException("Invalid type in instruction ctor");
