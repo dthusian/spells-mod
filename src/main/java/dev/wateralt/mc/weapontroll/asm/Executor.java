@@ -12,12 +12,15 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.RecordComponent;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class Executor {
+  
   private static void incorrectTypes(Consumer<String> throwErr, Object... args) {
     StringBuilder sb = new StringBuilder();
     sb.append("Incorrect type [");
@@ -35,7 +38,7 @@ public class Executor {
     throwErr.accept(sb.toString());
   }
   
-  public static void execute(Program program, LivingEntity user, LivingEntity target, ServerWorld world, int instructionLimit) {
+  public static Object[] execute(Program program, LivingEntity user, LivingEntity target, ServerWorld world, int instructionLimit) {
     int pc = 0;
     List<Instructions.Instr> instrs = program.getInstrs();
     HashMap<String, Integer> labels = program.getLabels();
@@ -45,7 +48,7 @@ public class Executor {
     
     for(int i = 0; i < instructionLimit; i++) {
       if(pc == instrs.size()) {
-        return;
+        return slots;
       }
       int finalPc = pc;
       Consumer<String> throwErr = s -> { 
@@ -53,90 +56,8 @@ public class Executor {
       };
       
       Instructions.Instr instr = program.getInstrs().get(pc);
+      
       switch(instr) {
-        case Instructions.LoadNum x -> {
-          slots[x.slotDst()] = x.val();
-        }
-        case Instructions.Add x -> {
-          Object a = slots[x.slotA()];
-          Object b = slots[x.slotB()];
-          if(a instanceof Double da && b instanceof Double db) {
-            slots[x.slotDst()] = da + db;
-          } else if(a instanceof Vec3d va && b instanceof Vec3d vb) {
-            slots[x.slotDst()] = va.add(vb);
-          } else {
-            Executor.incorrectTypes(throwErr, a, b);
-          }
-        }
-        case Instructions.Sub x -> {
-          Object a = slots[x.slotA()];
-          Object b = slots[x.slotB()];
-          if(a instanceof Double da && b instanceof Double db) {
-            slots[x.slotDst()] = da - db;
-          } else if(a instanceof Vec3d va && b instanceof Vec3d vb) {
-            slots[x.slotDst()] = va.subtract(vb);
-          } else {
-            Executor.incorrectTypes(throwErr, a, b);
-          }
-        }
-        case Instructions.Mul x -> {
-          Object a = slots[x.slotA()];
-          Object b = slots[x.slotB()];
-          if(a instanceof Double da && b instanceof Double db) {
-            slots[x.slotDst()] = da * db;
-          } else if(a instanceof Vec3d va && b instanceof Double db) {
-            slots[x.slotDst()] = va.multiply(db);
-          } else {
-            Executor.incorrectTypes(throwErr, a, b);
-          }
-        }
-        case Instructions.Div x -> {
-          Object a = slots[x.slotA()];
-          Object b = slots[x.slotB()];
-          if(a instanceof Double da && b instanceof Double db) {
-            slots[x.slotDst()] = da * db;
-          } else if(a instanceof Vec3d va && b instanceof Double db) {
-            slots[x.slotDst()] = va.multiply(1 / db);
-          } else {
-            Executor.incorrectTypes(throwErr, a, b);
-          }
-        }
-        case Instructions.Round x -> {
-          Object a = slots[x.slotSrc()];
-          if(a instanceof Double da) {
-            slots[x.slotDst()] = Math.round(da);
-          } else {
-            Executor.incorrectTypes(throwErr, a);
-          }
-        }
-        case Instructions.Copy x -> {
-          slots[x.slotDst()] = slots[x.slotSrc()];
-        }
-
-        case Instructions.LoadVec x -> {
-          slots[x.slotDst()] = new Vec3d(x.x(), x.y(), x.z());
-        }
-        case Instructions.MakeVec x -> {
-          Object ox = slots[x.slotX()];
-          Object oy = slots[x.slotY()];
-          Object oz = slots[x.slotZ()];
-          if(ox instanceof Double dx && oy instanceof Double dy && oz instanceof Double dz) {
-            slots[x.slotDst()] = new Vec3d(dx, dy, dz);
-          } else {
-            Executor.incorrectTypes(throwErr, ox, oy, oz);
-          }
-        }
-        case Instructions.SplitVec x -> {
-          Object o = slots[x.slotSrc()];
-          if(o instanceof Vec3d vo) {
-            slots[x.slotX()] = vo.getX();
-            slots[x.slotY()] = vo.getY();
-            slots[x.slotZ()] = vo.getZ();
-          } else {
-            Executor.incorrectTypes(throwErr, o);
-          }
-        }
-
         case Instructions.JumpIfEqual x -> {
           Object a = slots[x.slotA()];
           Object b = slots[x.slotB()];
@@ -159,99 +80,80 @@ public class Executor {
             Executor.incorrectTypes(throwErr, a, b);
           }
         }
-        case Instructions.Label x -> {
-          // no op
-        }
-
-        case Instructions.AccelEntity x -> {
-          Object a = slots[x.slotEntity()];
-          Object b = slots[x.slotVel()];
-          if(a instanceof Entity ea && b instanceof Vec3d vb) {
-            ea.addVelocity(vb);
+        case Instructions.Label x -> {}
+        case Instructions.SplitVec x -> {
+          Object o = slots[x.slotSrc()];
+          if(o instanceof Vec3d vo) {
+            slots[x.slotX()] = vo.getX();
+            slots[x.slotY()] = vo.getY();
+            slots[x.slotZ()] = vo.getZ();
           } else {
-            Executor.incorrectTypes(throwErr, a, b);
+            Executor.incorrectTypes(throwErr, o);
           }
         }
-        case Instructions.DamageEntity x -> {
-          Object a = slots[x.slotEntity()];
-          Object b = slots[x.slotDmg()];
-          if(a instanceof Entity ea && b instanceof Double db) {
-            ea.damage(world, world.getDamageSources().magic(), db.floatValue());
+        
+        default -> {
+          // read record components
+          RecordComponent[] components = instr.getClass().getRecordComponents();
+          Object[] componentValues = Arrays.stream(components).map(v -> {
+            try {
+              return v.getAccessor().invoke(instr);
+            } catch (Exception err) {
+              throw new RuntimeException(err);
+            }
+          }).toArray();
+          
+          // read exec parameters
+          Method exec = Arrays.stream(instr.getClass().getDeclaredMethods())
+            .filter(v -> v.getName().equals("exec"))
+            .findFirst()
+            .get();
+          int nParams;
+          int paramOffset;
+          if(exec.getReturnType() == Void.class) {
+            nParams = components.length;
+            paramOffset = 0;
           } else {
-            Executor.incorrectTypes(throwErr, a, b);
+            nParams = components.length - 1;
+            paramOffset = 1;
           }
-        }
-        case Instructions.EntityFacing x -> {
-          Object a = slots[x.slotEntity()];
-          if(a instanceof Entity ea) {
-            slots[x.slotFacing()] = ea.getRotationVector();
-          } else {
-            Executor.incorrectTypes(throwErr, a);
+          Object[] execParams = new Object[nParams + 1];
+          execParams[0] = world;
+          
+          Class<?>[] execTypes = exec.getParameterTypes();
+          
+          // typecheck and load args into execParams
+          boolean wrongTypes = false; 
+          for(int j = 0; j < nParams; j++) {
+            if(componentValues[j + paramOffset].getClass() == Short.class) {
+              execParams[j + 1] = slots[(Short)componentValues[j + paramOffset]];
+            } else {
+              execParams[j + 1] = componentValues[j + paramOffset];
+            }
+            if(!execTypes[j].isAssignableFrom(execParams[j + 1].getClass())) {
+              wrongTypes = true;
+            }
           }
-        }
-        case Instructions.EntityPos x -> {
-          Object a = slots[x.slotEntity()];
-          if(a instanceof Entity ea) {
-            slots[x.slotPos()] = ea.getPos();
-          } else {
-            Executor.incorrectTypes(throwErr, a);
+          if(wrongTypes) {
+            Executor.incorrectTypes(throwErr, execParams);
           }
-        }
-        case Instructions.EntityVel x -> {
-          Object a = slots[x.slotEntity()];
-          if(a instanceof Entity ea) {
-            slots[x.slotVel()] = ea.getVelocity();
-          } else {
-            Executor.incorrectTypes(throwErr, a);
+          
+          // execute and writeback
+          Object ret;
+          try {
+            ret = exec.invoke(execParams);
+          } catch(Exception err) {
+            throw new RuntimeException(err);
           }
-        }
-        case Instructions.Explode x -> {
-          Object a = slots[x.slotPos()];
-          Object b = slots[x.slotPower()];
-          if(a instanceof Vec3d va && b instanceof Double db) {
-            world.createExplosion(null, va.getX(), va.getY(), va.getZ(), db.floatValue(), World.ExplosionSourceType.MOB);
-          } else {
-            Executor.incorrectTypes(throwErr, a, b);
-          }
-        }
-        case Instructions.NearestEntity x -> {
-          Object a = slots[x.slotPos()];
-          Object b = slots[x.slotIndex()];
-          if(a instanceof Vec3d va && b instanceof Integer ib) {
-            Box box = new Box(va.add(-4, -4, -4), va.add(4, 4, 4));
-            List<Entity> list = world.getEntitiesByType(TypeFilter.instanceOf(Entity.class), box, EntityPredicates.VALID_LIVING_ENTITY);
-            slots[x.slotEntity()] = list.get(ib);
-          } else {
-            Executor.incorrectTypes(throwErr, a, b);
-          }
-        }
-        case Instructions.PlaceBlock x -> {
-          //todo
-        }
-        case Instructions.SummonFireball x -> {
-          Object a = slots[x.slotPos()];
-          if(a instanceof Vec3d va) {
-            FireballEntity ent = new FireballEntity(world, user, new Vec3d(0, 0, 0), 2);
-            ent.setPosition(va);
-            world.spawnEntity(ent);
-            slots[x.slotFireball()] = ent;
-          } else {
-            Executor.incorrectTypes(throwErr, a);
-          }
-        }
-        case Instructions.SummonLightning x -> {
-          Object a = slots[x.slotPos()];
-          if(a instanceof Vec3d va) {
-            LightningEntity ent = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
-            ent.setPosition(va);
-            world.spawnEntity(ent);
-          } else {
-            Executor.incorrectTypes(throwErr, a);
+          if(exec.getReturnType() != Void.class) {
+            slots[(Short)componentValues[0]] = ret;
           }
         }
       }
       
       pc++;
     }
+    
+    return slots;
   }
 }
