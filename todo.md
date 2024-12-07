@@ -1,0 +1,2 @@
+- add new damage type for mana depletion
+- implement place/destroy block

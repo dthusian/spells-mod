@@ -1,34 +1,50 @@
 package dev.wateralt.mc.weapontroll.asm;
 
-import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
+import dev.wateralt.mc.weapontroll.Weapontroll;
+import dev.wateralt.mc.weapontroll.playertracker.TrackedPlayer;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.TypeFilter;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.RecordComponent;
 import java.util.*;
 import java.util.function.Consumer;
 
 public class Executor {
-  public record ExecutionContext(Vec3d origin, ServerWorld world, @Nullable ServerPlayerEntity manaVessel) {
+  public static class ExecutionContext {
+    private Vec3d origin;
+    private ServerWorld world;
+    @Nullable
+    private ServerPlayerEntity manaVessel;
+    private int manaDeficit;
+    
+    public ExecutionContext(Vec3d origin, ServerWorld world, @Nullable ServerPlayerEntity manaVessel) {
+      this.origin = origin;
+      this.world = world;
+      this.manaVessel = manaVessel;
+      this.manaDeficit = 0;
+    }
+    
+    public ServerWorld world() {
+      return world;
+    }
+    
     public void useEnergy(double amount) {
-      
+      if(manaVessel != null) {
+        TrackedPlayer pl = Weapontroll.PLAYER_TRACKER.get(manaVessel);
+        int newEnergy = pl.getEnergy() - (int)Math.ceil(amount);
+        if(newEnergy < 0) {
+          manaDeficit += -newEnergy;
+          newEnergy = 0;
+          if(manaDeficit * EnergyCosts.HP_PER_ENERGY_DEPLETED >= manaVessel.getMaxHealth()) {
+            manaVessel.kill(world);
+          }
+        }
+        pl.setEnergy(newEnergy);
+      }
     }
     
     public void useEnergyAt(Vec3d pos, double amount) {
@@ -77,7 +93,12 @@ public class Executor {
     Object[] slots = new Object[program.getMaxSlots()];
     slots[0] = user;
     slots[1] = target;
-    ExecutionContext ctx = new ExecutionContext(target.getPos(), world);
+    ExecutionContext ctx;
+    if(user instanceof ServerPlayerEntity spl) {
+      ctx = new ExecutionContext(user.getPos(), world, spl);
+    } else {
+      ctx = new ExecutionContext(user.getPos(), world, null);
+    }
     
     for(int i = 0; i < instructionLimit; i++) {
       if(pc == instrs.size()) {
@@ -182,6 +203,11 @@ public class Executor {
       }
       
       pc++;
+    }
+    
+    // process mana deficit damage
+    if(ctx.manaDeficit > 0 && ctx.manaVessel != null) {
+      ctx.manaVessel.damage(world, world.getDamageSources().magic(), (float) (ctx.manaDeficit * EnergyCosts.HP_PER_ENERGY_DEPLETED));
     }
     
     return slots;

@@ -3,6 +3,7 @@ package dev.wateralt.mc.weapontroll.asm;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -134,12 +135,14 @@ public class Instructions {
   // In-world effects
   public record AccelEntity(short slotEntity, short slotVel) implements Instr {
     public void exec(Executor.ExecutionContext ctx, Entity ent, Vec3d vel) {
+      ctx.useEnergyAt(ent.getPos(), vel.distanceTo(Vec3d.ZERO) * EnergyCosts.ACCEL_COST_FACTOR);
       ent.addVelocity(vel);
     }
   }
   public record DamageEntity(short slotEntity, short slotDmg) implements Instr {
-    public void exec(Executor.ExecutionContext ctx, Entity ent, Vec3d vel) {
-      ent.addVelocity(vel);
+    public void exec(Executor.ExecutionContext ctx, Entity ent, double dmg) {
+      ctx.useEnergyAt(ent.getPos(), Math.pow(dmg, EnergyCosts.DAMAGE_COST_POWER));
+      ent.damage(ctx.world(), ctx.world().getDamageSources().magic(), (float)dmg);
     }
   }
   public record PlaceBlock(short slotPos, String block) implements Instr {
@@ -154,11 +157,13 @@ public class Instructions {
   }
   public record Explode(short slotPos, short slotPower) implements Instr {
     public void exec(Executor.ExecutionContext ctx, Vec3d pos, double power) {
+      ctx.useEnergyAt(pos, EnergyCosts.EXPLODE_COST_FACTOR * Math.pow(EnergyCosts.EXPLODE_COST_BASE, power));
       ctx.world().createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), (float)power, World.ExplosionSourceType.MOB);
     }
   }
   public record SummonLightning(short slotPos) implements Instr {
     public void exec(Executor.ExecutionContext ctx, Vec3d pos) {
+      ctx.useEnergyAt(pos, EnergyCosts.LIGHTNING_COST);
       LightningEntity ent = new LightningEntity(EntityType.LIGHTNING_BOLT, ctx.world());
       ent.setPosition(pos);
       ctx.world().spawnEntity(ent);
@@ -166,6 +171,7 @@ public class Instructions {
   }
   public record SummonFireball(short slotFireball, short slotPos) implements Instr {
     public Entity exec(Executor.ExecutionContext ctx, Vec3d pos) {
+      ctx.useEnergyAt(pos, EnergyCosts.FIREBALL_COST);
       FireballEntity ent = new FireballEntity(EntityType.FIREBALL, ctx.world());
       ent.setPosition(pos);
       ctx.world().spawnEntity(ent);
