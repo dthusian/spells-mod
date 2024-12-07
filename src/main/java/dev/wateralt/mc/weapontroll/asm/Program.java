@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class Program {
@@ -15,11 +16,27 @@ public class Program {
     this.maxSlots = maxSlots;
     String[] lines = src.split("\n");
     instrs = new ArrayList<>();
+    Dialect dialect = Dialects.STD_DIALECT;
     for(int i = 0; i < lines.length; i++) {
       try {
-        instrs.add(Instructions.parse(lines[i]));
+        if(lines[i].isEmpty() || lines[i].startsWith("#")) {
+          // comment
+        } else if(lines[i].startsWith(".")) {
+          // assembler directive
+          String[] split = lines[i].split(" ");
+          if(Objects.equals(split[0], ".lang")) {
+            if(Objects.equals(split[1], "std")) {
+              dialect = Dialects.STD_DIALECT;
+            } else {
+              throw new AsmError("Unknown dialect: " + split[1]);
+            }
+          }
+        } else {
+          // instruction
+          instrs.add(dialect.parse(lines[i]));
+        }
       } catch(AsmError err) {
-        throw new AsmError("at line %d: %s".formatted(i + 1, err.getMessage()));
+        throw new AsmError("Parse error at line %d: %s".formatted(i + 1, err.getMessage()));
       }
     }
     labels = new HashMap<>();

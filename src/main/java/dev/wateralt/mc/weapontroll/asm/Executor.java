@@ -1,16 +1,22 @@
 package dev.wateralt.mc.weapontroll.asm;
 
+import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -20,6 +26,22 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class Executor {
+  public record ExecutionContext(Vec3d origin, ServerWorld world, @Nullable ServerPlayerEntity manaVessel) {
+    public void useEnergy(double amount) {
+      
+    }
+    
+    public void useEnergyAt(Vec3d pos, double amount) {
+      double dist = origin.distanceTo(pos);
+      double factor;
+      if(dist <= 8) {
+        factor = 1;
+      } else {
+        factor = 1 + 0.001 * Math.pow(dist - 8, 2);
+      }
+      useEnergy(factor * amount);
+    }
+  }
   
   private static void incorrectTypes(Consumer<String> throwErr, Object... args) {
     StringBuilder sb = new StringBuilder();
@@ -55,6 +77,7 @@ public class Executor {
     Object[] slots = new Object[program.getMaxSlots()];
     slots[0] = user;
     slots[1] = target;
+    ExecutionContext ctx = new ExecutionContext(target.getPos(), world);
     
     for(int i = 0; i < instructionLimit; i++) {
       if(pc == instrs.size()) {
@@ -71,12 +94,8 @@ public class Executor {
         case Instructions.JumpIfEqual x -> {
           Object a = slots[x.slotA()];
           Object b = slots[x.slotB()];
-          if(a instanceof Double da && b instanceof Double db) {
-            if(da.equals(db)) {
-              pc = labels.get(x.label());
-            }
-          } else {
-            Executor.incorrectTypes(throwErr, a, b);
+          if(Objects.equals(a, b)) {
+            pc = labels.get(x.label());
           }
         }
         case Instructions.JumpIfLess x -> {
@@ -128,10 +147,10 @@ public class Executor {
             paramOffset = 1;
           }
           Object[] execParams = new Object[nParams + 1];
-          execParams[0] = world;
+          execParams[0] = ctx;
           
           Class<?>[] execTypes = exec.getParameterTypes();
-          assert execTypes[0] == ServerWorld.class;
+          assert execTypes[0] == ExecutionContext.class;
 
           // typecheck and load args into execParams
           boolean wrongTypes = false; 
