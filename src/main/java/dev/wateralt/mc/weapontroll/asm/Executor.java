@@ -55,12 +55,20 @@ public class Executor {
     public void useEnergyAt(Vec3d pos, double amount) {
       double dist = origin.distanceTo(pos);
       double factor;
-      if(dist <= 8) {
+      if(dist <= EnergyCosts.FREE_RADIUS) {
         factor = 1;
       } else {
-        factor = 1 + 0.001 * Math.pow(dist - 8, 2);
+        factor = 1 + 0.001 * Math.pow(dist - EnergyCosts.FREE_RADIUS, 2);
       }
       useEnergy(factor * amount);
+    }
+    
+    public Vec3d origin() {
+      return origin;
+    }
+    
+    public ServerPlayerEntity playerUser() {
+      return manaVessel;
     }
   }
   

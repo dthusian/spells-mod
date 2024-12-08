@@ -11,6 +11,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.List;
 
@@ -36,5 +38,9 @@ public class Util {
       Weapontroll.LOGGER.warn("Exception occurred while executing program: " + err);
       err.printStackTrace();
     }
+  }
+  
+  public static BlockPos vecToPos(Vec3d vec) {
+    return new BlockPos((int)Math.floor(vec.getX()), (int)Math.floor(vec.getY()), (int)Math.floor(vec.getZ()));
   }
 }

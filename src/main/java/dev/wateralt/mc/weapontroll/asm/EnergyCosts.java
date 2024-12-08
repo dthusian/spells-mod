@@ -31,4 +31,7 @@ public class EnergyCosts {
   
   // Natural energy regen
   public static int ENERGY_REGEN = 10;
+  
+  // Threshold for "far" interactions that cost extra
+  public static int FREE_RADIUS = 8;
 }

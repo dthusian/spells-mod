@@ -1,9 +1,11 @@
 package dev.wateralt.mc.weapontroll.asm;
 
+import dev.wateralt.mc.weapontroll.Util;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.ChickenEntity;
@@ -11,16 +13,19 @@ import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -165,7 +170,7 @@ public class Instructions {
     }
   }
   
-  // Entity manip instrs
+  // World query instrs
   public record NearestEntity(short slotEntity, short slotPos, short slotIndex) implements Instr {
     public Entity exec(Executor.ExecutionContext ctx, Vec3d pos, double slot) {
       Box box = new Box(pos.add(-4, -4, -4), pos.add(4, 4, 4));
@@ -195,6 +200,26 @@ public class Instructions {
       return ent.getRotationVector();
     }
   }
+  public record CheckBlock(short slotRes, short slotPos, String block) implements Instr {
+    public double exec(Executor.ExecutionContext ctx, Vec3d pos, String block) {
+      if(pos.distanceTo(ctx.origin()) > EnergyCosts.FREE_RADIUS) {
+        ctx.useEnergyAt(pos, 1);
+      }
+      BlockPos blockPos = Util.vecToPos(pos);
+      if(ctx.world()
+        .getBlockState(blockPos)
+        .getRegistryEntry()
+        .getKey()
+        .get()
+        .getValue()
+        .equals(Identifier.of("minecraft", block))
+      ) {
+        return 1.0;
+      } else {
+        return 0.0;
+      }
+    }
+  }
   
   // In-world effects
   public record AccelEntity(short slotEntity, short slotVel) implements Instr {
@@ -218,12 +243,53 @@ public class Instructions {
   }
   public record PlaceBlock(short slotPos, String block) implements Instr {
     public void exec(Executor.ExecutionContext ctx, Vec3d pos, String block) {
-      throw new AsmError("Not implemented");
+      // load item and check it's a blockitem
+      Item item = Registries.ITEM.get(Identifier.of("minecraft", block));
+      if(item == null) {
+        throw new AsmError("Invalid block");
+      }
+      BlockItem blockItem;
+      if(item instanceof BlockItem bi) {
+        blockItem = bi;
+      } else {
+        throw new AsmError("The block is not representible by an item");
+      }
+      
+      // check it's in your inventory
+      ServerPlayerEntity user = ctx.playerUser();
+      if(user == null) {
+        return;
+      }
+      boolean creative = user.isCreative();
+      Inventory inv = user.getInventory();
+      if(!creative && !inv.containsAny(v -> v.getItem().equals(bi))) {
+        throw new AsmError("No such item in your inventory");
+      }
+      
+      // place the block
+      BlockPos blockPos = Util.vecToPos(pos);
+      BlockState target = ctx.world().getBlockState(blockPos);
+      if(target.isReplaceable()) {
+        // actually do the stuff
+        ctx.world().setBlockState(blockPos, bi.getBlock().getDefaultState(), Block.NOTIFY_ALL);
+        if(!creative) {
+          for(int i = 0; i < inv.size(); i++) {
+            if(inv.getStack(i).getItem().equals(bi)) {
+              inv.removeStack(i, 1);
+              break;
+            }
+          }
+        }
+        ctx.useEnergyAt(pos, Math.max(Math.ceil(bi.getBlock().getHardness()), 1.0));
+      }
     }
   }
   public record DestroyBlock(short slotPos) implements Instr {
     public void exec(Executor.ExecutionContext ctx, Vec3d pos) {
-      throw new AsmError("Not implemented");
+      BlockPos blockPos = Util.vecToPos(pos);
+      BlockState state = ctx.world().getBlockState(blockPos);
+      ctx.useEnergyAt(pos, Math.max(Math.ceil(state.getBlock().getHardness()), 1.0));
+      ctx.world().breakBlock(blockPos, true, ctx.playerUser());
     }
   }
   public record Explode(short slotPos, short slotPower) implements Instr {

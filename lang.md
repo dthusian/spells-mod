@@ -81,7 +81,7 @@ TODO
 - `jmpe <label: str> <a: slot> <b: slot>` Jumps to the label named `label` if `a` is equal to `b`. Works on
   numbers, vectors, and entities.
 
-### Entity Querying Instructions
+### World Querying Instructions
 
 - `nearestent <dst: slot=ent> <pos: slot.vec> <n: slot.num>` Finds the `n`th nearest entity from the position `pos`.
   `n` is zero-indexed, so `n=0` means the closest entity, `n=1` is the second closest, etc.

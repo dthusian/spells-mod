@@ -44,6 +44,7 @@ public class Dialects {
       instrs.put("entpos", Instructions.EntityPos.class);
       instrs.put("entvel", Instructions.EntityVel.class);
       instrs.put("entfacing", Instructions.EntityFacing.class);
+      instrs.put("checkblock", Instructions.CheckBlock.class);
 
       instrs.put("accelent", Instructions.AccelEntity.class);
       instrs.put("damageent", Instructions.DamageEntity.class);
