@@ -39,7 +39,7 @@ public class Executor {
         if(newEnergy < 0) {
           manaDeficit += -newEnergy;
           newEnergy = 0;
-          if(manaDeficit * EnergyCosts.HP_PER_ENERGY_DEPLETED >= manaVessel.getMaxHealth()) {
+          if(manaDeficit * EnergyCosts.HP_PER_ENERGY_DEPLETED >= manaVessel.getMaxHealth() && !manaVessel.isCreative()) {
             manaVessel.kill(world);
           }
         }
@@ -76,11 +76,12 @@ public class Executor {
     throwErr.accept(sb.toString());
   }
   
-  private static boolean iHateJava(Class<?> a, Class<?> b) {
-    if(a.isAssignableFrom(b)) {
+  private static boolean iHateJava(Class<?> a, Object b) {
+    Class<?> cb = b.getClass();
+    if(a.isAssignableFrom(cb)) {
       return true;
     }
-    if(a.isPrimitive() && a.getSimpleName().equalsIgnoreCase(b.getSimpleName())) {
+    if(a.isPrimitive() && a.getSimpleName().equalsIgnoreCase(cb.getSimpleName())) {
       return true;
     }
     return false;
@@ -181,7 +182,7 @@ public class Executor {
             } else {
               execParams[j + 1] = componentValues[j + paramOffset];
             }
-            if(!iHateJava(execTypes[j + 1], execParams[j + 1].getClass())) {
+            if(!iHateJava(execTypes[j + 1], execParams[j + 1])) {
               wrongTypes = true;
             }
           }
@@ -206,7 +207,7 @@ public class Executor {
     }
     
     // process mana deficit damage
-    if(ctx.manaDeficit > 0 && ctx.manaVessel != null) {
+    if(ctx.manaDeficit > 0 && ctx.manaVessel != null && !ctx.manaVessel.isCreative()) {
       ctx.manaVessel.damage(world, world.getDamageSources().magic(), (float) (ctx.manaDeficit * EnergyCosts.HP_PER_ENERGY_DEPLETED));
     }
     

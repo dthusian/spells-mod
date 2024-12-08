@@ -56,13 +56,13 @@ public class Program {
       };
       Consumer<String> validateLabel = s -> {
         if(!labels.containsKey(s)) {
-          throw new AsmError("at pc %d: slot %d is greater than the maximum (%d)".formatted(finalI, s, maxSlots - 1));
+          throw new AsmError("at pc %d: label %s does not exist".formatted(finalI, s));
         }
       };
       Instructions.Instr instr = instrs.get(i);
       Field[] fields = instr.getClass().getFields();
       for(int j = 0; j < fields.length; j++) {
-        if(fields[i].getType() == Short.class) {
+        if(fields[i].getType() == short.class) {
           try {
             validateSlot.accept((Short) fields[i].get(instr));
           } catch(Exception err) {

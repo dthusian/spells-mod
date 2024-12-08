@@ -1,5 +1,6 @@
 package dev.wateralt.mc.weapontroll.playertracker;
 
+import dev.wateralt.mc.weapontroll.asm.EnergyCosts;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
@@ -11,7 +12,7 @@ public class PlayerTracker {
   public PlayerTracker() {}
   
   public TrackedPlayer track(ServerPlayerEntity entity) {
-    TrackedPlayer pl = new TrackedPlayer(entity, 1000, 1000);
+    TrackedPlayer pl = new TrackedPlayer(entity.getServer(), entity.getUuid(), 1000, 1000);
     players.put(entity.getUuid(), pl);
     return pl;
   }
@@ -22,7 +23,14 @@ public class PlayerTracker {
     else return this.track(entity);
   }
   
-  public void regenEnergy(int amount) {
-    this.players.forEach((k, v) -> v.addEnergy(amount));
+  public void periodic() {
+    this.players.forEach((k, v) -> {
+      v.addEnergy(EnergyCosts.ENERGY_REGEN);
+      if(v.getEnergy() != v.getMaxEnergy() && !v.getEntity().isDisconnected()) {
+        v.updateAndShowEnergyBar();
+      } else {
+        v.hideEnergyBar();
+      }
+    });
   }
 }

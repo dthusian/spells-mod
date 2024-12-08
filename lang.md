@@ -95,7 +95,7 @@ TODO
   - Costs energy equal to hardness of the block, rounded up, minimum of 1.
 - `destroyblock <pos: slot.vec> <block: str>` Destroys a block at position `pos`.
   - Costs energy equal to hardness of the block, rounded up, minimum of 1.
-- `summonlightning <pos: slot.vec>` Summons lightning at position `pos`.
+- `lightning <pos: slot.vec>` Summons lightning at position `pos`.
   - Costs 20 energy
-- `summonfireball <ent: slot=ent> <pos: slot.num>` Summons a fireball at position `pos`, and returns it in `ent`.
+- `fireball <ent: slot=ent> <pos: slot.num>` Summons a fireball at position `pos`, and returns it in `ent`.
   - Costs 20 energy

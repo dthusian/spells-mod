@@ -13,4 +13,7 @@ public class EnergyCosts {
   
   // Energy depletion hp cost
   public static double HP_PER_ENERGY_DEPLETED = 0.04;
+  
+  // Natural energy regen
+  public static int ENERGY_REGEN = 10;
 }

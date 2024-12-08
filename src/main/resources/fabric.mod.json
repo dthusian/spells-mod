@@ -10,9 +10,6 @@
   "icon": "assets/weapontroll/icon.png",
   "environment": "*",
   "entrypoints": {
-    "client": [
-      "dev.wateralt.mc.weapontroll.client.WeapontrollClient"
-    ],
     "main": [
       "dev.wateralt.mc.weapontroll.Weapontroll"
     ]
