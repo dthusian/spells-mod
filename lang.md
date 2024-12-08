@@ -85,7 +85,7 @@ TODO
 ### World Manipulation Instructions
 
 - `accelent <ent: slot.ent> <vel: slot.vel>` Adds `vel` (blocks per tick) to `ent`'s velocity.
-  - Costs 10 energy per m/s accelerated.
+  - Costs 30 energy per m/t accelerated.
 - `damageent <ent: slot.ent> <dmg: slot.num>` Hits `ent` for `dmg` damage.
   - Costs `dmg^2` energy, rounded up.
 - `explode <pos: slot.vec> <power: slot.num>` Creates an explosion at `pos` with power `power`.

@@ -2,7 +2,7 @@ package dev.wateralt.mc.weapontroll.asm;
 
 public class EnergyCosts {
   // Instruction energy costs
-  public static double ACCEL_COST_FACTOR = 10;
+  public static double ACCEL_COST_FACTOR = 30;
   public static double DAMAGE_COST_POWER = 2;
   public static double EXPLODE_COST_FACTOR = 10;
   public static double EXPLODE_COST_BASE = 2;

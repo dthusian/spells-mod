@@ -16,6 +16,9 @@ public class Dialects {
       instrs.put("div", Instructions.Div.class);
       instrs.put("round", Instructions.Round.class);
       instrs.put("copy", Instructions.Copy.class);
+      instrs.put("sqrt", Instructions.Sqrt.class);
+      instrs.put("sin", Instructions.Sin.class);
+      instrs.put("cos", Instructions.Cos.class);
 
       instrs.put("label", Instructions.Label.class);
       instrs.put("jmpl", Instructions.JumpIfLess.class);

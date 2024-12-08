@@ -77,6 +77,9 @@ public class Executor {
   }
   
   private static boolean iHateJava(Class<?> a, Object b) {
+    if(b == null) {
+      return false;
+    }
     Class<?> cb = b.getClass();
     if(a.isAssignableFrom(cb)) {
       return true;
@@ -87,7 +90,7 @@ public class Executor {
     return false;
   }
   
-  public static Object[] execute(Program program, LivingEntity user, LivingEntity target, ServerWorld world, int instructionLimit) {
+  public static Object[] execute(Program program, @Nullable LivingEntity user, @Nullable LivingEntity target, ServerWorld world, int instructionLimit) {
     int pc = 0;
     List<Instructions.Instr> instrs = program.getInstrs();
     HashMap<String, Integer> labels = program.getLabels();
@@ -97,8 +100,10 @@ public class Executor {
     ExecutionContext ctx;
     if(user instanceof ServerPlayerEntity spl) {
       ctx = new ExecutionContext(user.getPos(), world, spl);
-    } else {
+    } else if(user != null) {
       ctx = new ExecutionContext(user.getPos(), world, null);
+    } else {
+      ctx = new ExecutionContext(Vec3d.ZERO, world, null);
     }
     
     for(int i = 0; i < instructionLimit; i++) {

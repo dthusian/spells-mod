@@ -26,7 +26,7 @@ public class PlayerTracker {
   public void periodic() {
     this.players.forEach((k, v) -> {
       v.addEnergy(EnergyCosts.ENERGY_REGEN);
-      if(v.getEnergy() != v.getMaxEnergy() && !v.getEntity().isDisconnected()) {
+      if(v.getEnergy() != v.getMaxEnergy() && v.getEntity() != null && !v.getEntity().isDisconnected()) {
         v.updateAndShowEnergyBar();
       } else {
         v.hideEnergyBar();

@@ -19,7 +19,7 @@ public class Program {
     Dialect dialect = Dialects.STD_DIALECT;
     for(int i = 0; i < lines.length; i++) {
       try {
-        if(lines[i].isEmpty() || lines[i].startsWith("#")) {
+        if(lines[i].trim().isEmpty() || lines[i].startsWith("#")) {
           // comment
         } else if(lines[i].startsWith(".")) {
           // assembler directive
@@ -36,7 +36,7 @@ public class Program {
           instrs.add(dialect.parse(lines[i]));
         }
       } catch(AsmError err) {
-        throw new AsmError("Parse error at line %d: %s".formatted(i + 1, err.getMessage()));
+        throw new AsmError("Parse error at line %d (`%s`): %s".formatted(i + 1, lines[i], err.getMessage()));
       }
     }
     labels = new HashMap<>();

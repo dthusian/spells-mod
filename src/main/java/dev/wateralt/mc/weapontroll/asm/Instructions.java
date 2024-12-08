@@ -52,6 +52,21 @@ public class Instructions {
       return Math.round(a);
     }
   }
+  public record Sqrt(short slotDst, short slotSrc) implements Instr {
+    public double exec(Executor.ExecutionContext ctx, double a) {
+      return Math.sqrt(a);
+    }
+  }
+  public record Sin(short slotDst, short slotSrc) implements Instr {
+    public double exec(Executor.ExecutionContext ctx, double a) {
+      return Math.sin(a);
+    }
+  }
+  public record Cos(short slotDst, short slotSrc) implements Instr {
+    public double exec(Executor.ExecutionContext ctx, double a) {
+      return Math.cos(a);
+    }
+  }
   
   // Branching instrs
   public record Label(String label) implements Instr { }
@@ -137,6 +152,7 @@ public class Instructions {
     public void exec(Executor.ExecutionContext ctx, Entity ent, Vec3d vel) {
       ctx.useEnergyAt(ent.getPos(), vel.distanceTo(Vec3d.ZERO) * EnergyCosts.ACCEL_COST_FACTOR);
       ent.addVelocity(vel);
+      ent.velocityModified = true;
     }
   }
   public record DamageEntity(short slotEntity, short slotDmg) implements Instr {

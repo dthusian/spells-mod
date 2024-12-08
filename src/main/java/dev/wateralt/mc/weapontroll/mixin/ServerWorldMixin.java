@@ -12,7 +12,7 @@ import java.util.function.BooleanSupplier;
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldMixin {
   @Inject(method = "tick", at = @At("HEAD"))
-  public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
+  private void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
     ServerWorld that = (ServerWorld) (Object) this;
     if(that.getTime() % 20 == 0) {
       Weapontroll.PLAYER_TRACKER.periodic();
