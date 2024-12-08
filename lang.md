@@ -107,10 +107,11 @@ TODO
   - Costs energy equal to hardness of the block, rounded up, minimum of 1.
 - `lightning <pos: slot.vec>` Summons lightning at position `pos`.
   - Costs 20 energy
-- `fireball <ent: slot=ent> <pos: slot.vec>` Summons a fireball at position `pos`, and returns it in `ent`.
-  - Costs 20 energy
 - `summon <ent: slot=ent> <pos: slot.vec> <type: string>` Summons an entity. You can only pick from the list below:
   - `pig`: Costs 200 energy
   - `chicken`: Costs 200 energy
   - `zombie`: Costs 300 energy
   - `skeleton`: Costs 300 energy
+  - `arrow`: Costs 50 energy
+  - `fireball`: Costs 30 energy
+  - `snowball`: Costs 20 energy

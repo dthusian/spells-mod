@@ -16,7 +16,7 @@ public abstract class ServerPlayerEntityMixin {
   private void swingHand(Hand hand, CallbackInfo ci) {
     ServerPlayerEntity that = (ServerPlayerEntity) (Object) this;
     ItemStack stack = that.getStackInHand(hand);
-    if(stack != null && stack.getItem().equals(Items.WRITABLE_BOOK)) {
+    if(stack != null && stack.getItem().equals(Items.WRITABLE_BOOK) && that.isSneaking()) {
       Util.executeProgram(stack, null, that, that.getServerWorld());
     }
   }

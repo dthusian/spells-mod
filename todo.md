@@ -1,5 +1,6 @@
 - add new damage type for mana depletion
 - implement place/destroy block
+- energy cost for mounting
 - add more world interactions
   - summoning entities
   - particles

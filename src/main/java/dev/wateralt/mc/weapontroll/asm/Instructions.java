@@ -8,7 +8,9 @@ import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TypeFilter;
@@ -239,15 +241,6 @@ public class Instructions {
       ctx.world().spawnEntity(ent);
     }
   }
-  public record SummonFireball(short slotFireball, short slotPos) implements Instr {
-    public Entity exec(Executor.ExecutionContext ctx, Vec3d pos) {
-      ctx.useEnergyAt(pos, EnergyCosts.FIREBALL_COST);
-      FireballEntity ent = new FireballEntity(EntityType.FIREBALL, ctx.world());
-      ent.setPosition(pos);
-      ctx.world().spawnEntity(ent);
-      return ent;
-    }
-  }
   public record SummonMob(short slotEnt, short slotPos, String entity) implements Instr {
     public Entity exec(Executor.ExecutionContext ctx, Vec3d pos, String entity) {
       Integer energyCost = EnergyCosts.SUMMON_ENTITY_COSTS.get(entity);
@@ -261,6 +254,9 @@ public class Instructions {
         case "chicken" -> summonedEntity = new ChickenEntity(EntityType.CHICKEN, ctx.world());
         case "zombie" -> summonedEntity = new ZombieEntity(EntityType.ZOMBIE, ctx.world());
         case "skeleton" -> summonedEntity = new SkeletonEntity(EntityType.SKELETON, ctx.world());
+        case "arrow" -> summonedEntity = new ArrowEntity(EntityType.ARROW, ctx.world());
+        case "snowball" -> summonedEntity = new SnowballEntity(EntityType.SNOWBALL, ctx.world());
+        case "fireball" -> summonedEntity = new FireballEntity(EntityType.FIREBALL, ctx.world());
         default -> throw new RuntimeException("unreachable");
       }
       summonedEntity.setPosition(pos);

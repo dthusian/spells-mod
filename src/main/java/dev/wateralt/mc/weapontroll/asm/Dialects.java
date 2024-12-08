@@ -52,7 +52,6 @@ public class Dialects {
       instrs.put("placeblock", Instructions.PlaceBlock.class);
       instrs.put("destroyblock", Instructions.DestroyBlock.class);
       instrs.put("lightning", Instructions.SummonLightning.class);
-      instrs.put("fireball", Instructions.SummonFireball.class);
       instrs.put("summon", Instructions.SummonMob.class);
     }
     
