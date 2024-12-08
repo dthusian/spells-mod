@@ -25,7 +25,7 @@ public class Util {
     pages.forEach(sb::append);
     String source = sb.toString();
     try {
-      Program prog = new Program(source, 8);
+      Program prog = new Program(source, 16);
       Executor.execute(prog, attacker, target, sw, 1024);
     } catch(AsmError err) {
       if(attacker instanceof ServerPlayerEntity spe) {
