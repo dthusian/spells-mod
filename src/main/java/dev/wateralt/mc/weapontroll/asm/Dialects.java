@@ -22,7 +22,11 @@ public class Dialects {
 
       instrs.put("label", Instructions.Label.class);
       instrs.put("jmpl", Instructions.JumpIfLess.class);
+      instrs.put("jmple", Instructions.JumpIfLessEqual.class);
+      instrs.put("jmpg", Instructions.JumpIfGreater.class);
+      instrs.put("jmpge", Instructions.JumpIfGreaterEqual.class);
       instrs.put("jmpe", Instructions.JumpIfEqual.class);
+      instrs.put("jmpne", Instructions.JumpIfNotEqual.class);
 
       instrs.put("loadvec", Instructions.LoadVec.class);
       instrs.put("makevec", Instructions.MakeVec.class);
@@ -33,6 +37,8 @@ public class Dialects {
       instrs.put("vdiv", Instructions.VDiv.class);
       instrs.put("vdist", Instructions.VDist.class);
       instrs.put("vnorm", Instructions.VNorm.class);
+      instrs.put("vdot", Instructions.VDot.class);
+      instrs.put("vcross", Instructions.VCross.class);
 
       instrs.put("nearestent", Instructions.NearestEntity.class);
       instrs.put("entpos", Instructions.EntityPos.class);
@@ -41,11 +47,13 @@ public class Dialects {
 
       instrs.put("accelent", Instructions.AccelEntity.class);
       instrs.put("damageent", Instructions.DamageEntity.class);
+      instrs.put("mountent", Instructions.MountEntity.class);
       instrs.put("explode", Instructions.Explode.class);
       instrs.put("placeblock", Instructions.PlaceBlock.class);
       instrs.put("destroyblock", Instructions.DestroyBlock.class);
       instrs.put("lightning", Instructions.SummonLightning.class);
       instrs.put("fireball", Instructions.SummonFireball.class);
+      instrs.put("summon", Instructions.SummonMob.class);
     }
     
     @Override

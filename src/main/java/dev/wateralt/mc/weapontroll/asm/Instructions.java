@@ -4,6 +4,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.mob.SkeletonEntity;
+import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.passive.ChickenEntity;
+import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -16,6 +20,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class Instructions {
 
@@ -70,8 +75,40 @@ public class Instructions {
   
   // Branching instrs
   public record Label(String label) implements Instr { }
-  public record JumpIfLess(String label, short slotA, short slotB) implements Instr { }
-  public record JumpIfEqual(String label, short slotA, short slotB) implements Instr { }
+  public record JumpIfLess(String label, short slotA, short slotB) implements Instr {
+    public boolean exec(Executor.ExecutionContext ctx, double a, double b) {
+      return a < b;
+    }
+  }
+
+  public record JumpIfLessEqual(String label, short slotA, short slotB) implements Instr {
+    public boolean exec(Executor.ExecutionContext ctx, double a, double b) {
+      return a <= b;
+    }
+  }
+
+  public record JumpIfGreater(String label, short slotA, short slotB) implements Instr {
+    public boolean exec(Executor.ExecutionContext ctx, double a, double b) {
+      return a > b;
+    }
+  }
+
+  public record JumpIfGreaterEqual(String label, short slotA, short slotB) implements Instr {
+    public boolean exec(Executor.ExecutionContext ctx, double a, double b) {
+      return a >= b;
+    }
+  }
+  public record JumpIfEqual(String label, short slotA, short slotB) implements Instr {
+    public boolean exec(Executor.ExecutionContext ctx, Object a, Object b) {
+      return Objects.equals(a, b);
+    }
+  }
+
+  public record JumpIfNotEqual(String label, short slotA, short slotB) implements Instr {
+    public boolean exec(Executor.ExecutionContext ctx, Object a, Object b) {
+      return !Objects.equals(a, b);
+    }
+  }
   
   // Vector manip instrs
   public record LoadVec(short slotDst, double x, double y, double z) implements Instr {
@@ -115,6 +152,16 @@ public class Instructions {
       return a.normalize();
     }
   }
+  public record VDot(short slotDst, short slotA, short slotB) implements Instr {
+    public double exec(Executor.ExecutionContext ctx, Vec3d a, Vec3d b) {
+      return a.dotProduct(b);
+    }
+  }
+  public record VCross(short slotDst, short slotA, short slotB) implements Instr {
+    public Vec3d exec(Executor.ExecutionContext ctx, Vec3d a, Vec3d b) {
+      return a.crossProduct(b);
+    }
+  }
   
   // Entity manip instrs
   public record NearestEntity(short slotEntity, short slotPos, short slotIndex) implements Instr {
@@ -124,10 +171,10 @@ public class Instructions {
       list.sort((a, b) -> (int) Math.signum(a.getPos().distanceTo(pos) - b.getPos().distanceTo(pos)));
       
       int slotInt = (int)slot;
-      if(list.size() >= slotInt) {
-        return null;
-      } else {
+      if(slotInt < list.size()) {
         return list.get((int)slot);
+      } else {
+        return null;
       }
     }
   }
@@ -161,18 +208,25 @@ public class Instructions {
       ent.damage(ctx.world(), ctx.world().getDamageSources().magic(), (float)dmg);
     }
   }
+  public record MountEntity(short slotBottom, short slotTop) implements Instr {
+    public void exec(Executor.ExecutionContext ctx, Entity bottom, Entity top) {
+      top.dismountVehicle();
+      top.startRiding(bottom, true);
+    }
+  }
   public record PlaceBlock(short slotPos, String block) implements Instr {
     public void exec(Executor.ExecutionContext ctx, Vec3d pos, String block) {
       throw new AsmError("Not implemented");
     }
   }
   public record DestroyBlock(short slotPos) implements Instr {
-    public void exec(Executor.ExecutionContext ctx, Vec3d pos, String block) {
+    public void exec(Executor.ExecutionContext ctx, Vec3d pos) {
       throw new AsmError("Not implemented");
     }
   }
   public record Explode(short slotPos, short slotPower) implements Instr {
     public void exec(Executor.ExecutionContext ctx, Vec3d pos, double power) {
+      power = Math.clamp(power, 0.0, 6.0);
       ctx.useEnergyAt(pos, EnergyCosts.EXPLODE_COST_FACTOR * Math.pow(EnergyCosts.EXPLODE_COST_BASE, power));
       ctx.world().createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), (float)power, World.ExplosionSourceType.MOB);
     }
@@ -192,6 +246,26 @@ public class Instructions {
       ent.setPosition(pos);
       ctx.world().spawnEntity(ent);
       return ent;
+    }
+  }
+  public record SummonMob(short slotEnt, short slotPos, String entity) implements Instr {
+    public Entity exec(Executor.ExecutionContext ctx, Vec3d pos, String entity) {
+      Integer energyCost = EnergyCosts.SUMMON_ENTITY_COSTS.get(entity);
+      if(energyCost == null) {
+        throw new AsmError("Invalid entity");
+      }
+      ctx.useEnergyAt(pos, energyCost);
+      Entity summonedEntity;
+      switch(entity) {
+        case "pig" -> summonedEntity = new PigEntity(EntityType.PIG, ctx.world());
+        case "chicken" -> summonedEntity = new ChickenEntity(EntityType.CHICKEN, ctx.world());
+        case "zombie" -> summonedEntity = new ZombieEntity(EntityType.ZOMBIE, ctx.world());
+        case "skeleton" -> summonedEntity = new SkeletonEntity(EntityType.SKELETON, ctx.world());
+        default -> throw new RuntimeException("unreachable");
+      }
+      summonedEntity.setPosition(pos);
+      ctx.world().spawnEntity(summonedEntity);
+      return summonedEntity;
     }
   }
   

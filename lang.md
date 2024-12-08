@@ -34,10 +34,10 @@ Here are the available types:
 - `slot`: Any slot
 - `slot.num`: A slot containing a number
 - `slot.vec`: A slot containing a vector
-- `slot.entity`: A slot containing an entity
+- `slot.ent`: A slot containing an entity
 - `slot=num`: Any slot; will be overwritten with a number
 - `slot=vec`: Any slot; will be overwritten with a vector
-- `slot=entity`: Any slot; will be overwritten with an entity
+- `slot=ent`: Any slot; will be overwritten with an entity
 
 ### General Instructions
 
@@ -53,6 +53,9 @@ TODO
 - `mul <dst: slot=num> <a: slot.num> <b: slot.num>` Multiplies two numbers.
 - `div <dst: slot=num> <a: slot.num> <b: slot.num>` Divides two numbers (a / b).
 - `round <dst: slot=num> <a: slot.num>` Rounds to nearest integer.
+- `sqrt <dst: slot=num> <a: slot.num>` Takes the square root.
+- `sin <dst: slot=num> <a: slot.num>` Computes sin, in radians
+- `cos <dst: slot=num> <a: slot.num>` Computes cos, in radians
 
 ### Vector Instructions
 
@@ -65,17 +68,22 @@ TODO
 - `vdiv <dst: slot=vec> <a: slot.vec> <b: slot.num>` Divides a vector (a) by a scalar (b).
 - `vdist <dst: slot=num> <a: slot.vec>` Computes the length of a vector.
 - `vnorm <dst: slot=vec> <a: slot.vec>` Normalizes a vector to length = 1.
+- `vdot <dst: slot=num> <a: slot.vec> <b: slot.vec>` Computes dot product of two vectors.
+- `vcross <dst: slot=vec> <a: slot.vec> <b: slot.vec>` Computes cross product of two vectors.
 
 ### Jump Instructions
 
 - `label <name: str>` Does nothing, but is used to refer to locations in the program for jumping.
 - `jmpl <label: str> <a: slot.num> <b: slot.num>` Jumps to the label named `label` if `a` is less than `b`.
+- `jmple <label: str> <a: slot.num> <b: slot.num>` Jumps to the label named `label` if `a` is less than or equal to `b`.
+- `jmpg <label: str> <a: slot.num> <b: slot.num>` Jumps to the label named `label` if `a` is less than `b`.
+- `jmpge <label: str> <a: slot.num> <b: slot.num>` Jumps to the label named `label` if `a` is less than or equal to `b`.
 - `jmpe <label: str> <a: slot> <b: slot>` Jumps to the label named `label` if `a` is equal to `b`. Works on
   numbers, vectors, and entities.
 
 ### Entity Querying Instructions
 
-- `nearestent <dst: slot=ent> <pos: slot.vec> <n: num>` Finds the `n`th nearest entity from the position `pos`.
+- `nearestent <dst: slot=ent> <pos: slot.vec> <n: slot.num>` Finds the `n`th nearest entity from the position `pos`.
   `n` is zero-indexed, so `n=0` means the closest entity, `n=1` is the second closest, etc.
   `n` will be truncated (i.e. rounded towards zero).
 - `entpos <dst: slot=vec> <ent: slot.ent>` Gets the position of the entity, in blocks.
@@ -88,14 +96,21 @@ TODO
   - Costs 30 energy per m/t accelerated.
 - `damageent <ent: slot.ent> <dmg: slot.num>` Hits `ent` for `dmg` damage.
   - Costs `dmg^2` energy, rounded up.
+- `mountent <bottom: slot.ent> <top: slot.ent>` Makes the `top` entity ride the `bottom` entity.
+  - Costs 0 energy.
 - `explode <pos: slot.vec> <power: slot.num>` Creates an explosion at `pos` with power `power`.
   - Costs `10*2^power` energy, rounded up.
   - `power` is capped to 6.0, the power of a charged creeper or end crystal.
 - `placeblock <pos: slot.vec> <block: str>` Places a block from your inventory to the position `pos`.
   - Costs energy equal to hardness of the block, rounded up, minimum of 1.
-- `destroyblock <pos: slot.vec> <block: str>` Destroys a block at position `pos`.
+- `destroyblock <pos: slot.vec>` Destroys a block at position `pos`.
   - Costs energy equal to hardness of the block, rounded up, minimum of 1.
 - `lightning <pos: slot.vec>` Summons lightning at position `pos`.
   - Costs 20 energy
-- `fireball <ent: slot=ent> <pos: slot.num>` Summons a fireball at position `pos`, and returns it in `ent`.
+- `fireball <ent: slot=ent> <pos: slot.vec>` Summons a fireball at position `pos`, and returns it in `ent`.
   - Costs 20 energy
+- `summon <ent: slot=ent> <pos: slot.vec> <type: string>` Summons an entity. You can only pick from the list below:
+  - `pig`: Costs 200 energy
+  - `chicken`: Costs 200 energy
+  - `zombie`: Costs 300 energy
+  - `skeleton`: Costs 300 energy

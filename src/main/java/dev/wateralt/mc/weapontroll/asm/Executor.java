@@ -34,6 +34,7 @@ public class Executor {
     
     public void useEnergy(double amount) {
       if(manaVessel != null) {
+        boolean stop = false;
         TrackedPlayer pl = Weapontroll.PLAYER_TRACKER.get(manaVessel);
         int newEnergy = pl.getEnergy() - (int)Math.ceil(amount);
         if(newEnergy < 0) {
@@ -41,9 +42,13 @@ public class Executor {
           newEnergy = 0;
           if(manaDeficit * EnergyCosts.HP_PER_ENERGY_DEPLETED >= manaVessel.getMaxHealth() && !manaVessel.isCreative()) {
             manaVessel.kill(world);
+            stop = true;
           }
         }
         pl.setEnergy(newEnergy);
+        if(stop) {
+          throw new AsmError("Out of energy!");
+        }
       }
     }
     
@@ -164,12 +169,25 @@ public class Executor {
             .filter(v -> v.getName().equals("exec"))
             .findFirst()
             .get();
+          // duck-type the instruction
           int nParams;
           int paramOffset;
+          boolean isReturn = false;
+          boolean isNoReturn = false;
+          boolean isJump = false;
           if(exec.getReturnType() == void.class) {
+            // no return
+            isNoReturn = true;
             nParams = components.length;
             paramOffset = 0;
+          } else if(exec.getReturnType() == boolean.class) {
+            // jump
+            isJump = true;
+            nParams = components.length - 1;
+            paramOffset = 1;
           } else {
+            // returns
+            isReturn = true;
             nParams = components.length - 1;
             paramOffset = 1;
           }
@@ -200,10 +218,16 @@ public class Executor {
           try {
             ret = exec.invoke(instr, execParams);
           } catch(Exception err) {
-            throw new RuntimeException(err);
+            if(err.getCause() instanceof AsmError asmErr) {
+              throw asmErr;
+            } else {
+              throw new RuntimeException(err);
+            }
           }
-          if(exec.getReturnType() != void.class) {
+          if(isReturn) {
             slots[(Short)componentValues[0]] = ret;
+          } else if(isJump && (boolean)ret) {
+            pc = labels.get(componentValues[0]);
           }
         }
       }

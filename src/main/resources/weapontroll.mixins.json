@@ -5,8 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ItemMixin",
-    "ServerWorldMixin",
-    "WritableBookItemMixin"
+    "ServerPlayerEntityMixin",
+    "ServerWorldMixin"
   ],
   "client": [
   ],

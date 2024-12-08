@@ -1,2 +1,6 @@
 - add new damage type for mana depletion
 - implement place/destroy block
+- add more world interactions
+  - summoning entities
+  - particles
+  - status effects
