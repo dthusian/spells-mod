@@ -8,8 +8,8 @@ public class EnergyCosts {
   public static final double DAMAGE_COST_POWER = 2;
   public static final double EXPLODE_COST_FACTOR = 10;
   public static final double EXPLODE_COST_BASE = 2;
-  public static final double PLACE_COST_FACTOR = 1;
-  public static final double DESTROY_COST_FACTOR = 1;
+  public static final double PLACE_COST_FACTOR = 3;
+  public static final double DESTROY_COST_FACTOR = 3;
   public static final double LIGHTNING_COST = 20;
   
   // Cost for each entity
@@ -33,5 +33,5 @@ public class EnergyCosts {
   public static int ENERGY_REGEN = 10;
   
   // Threshold for "far" interactions that cost extra
-  public static int FREE_RADIUS = 8;
+  public static int LOCAL_RADIUS = 8;
 }

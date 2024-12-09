@@ -1,8 +1,8 @@
 package dev.wateralt.mc.weapontroll;
 
 import dev.wateralt.mc.weapontroll.asm.AsmError;
-import dev.wateralt.mc.weapontroll.asm.Executor;
-import dev.wateralt.mc.weapontroll.asm.Program;
+import dev.wateralt.mc.weapontroll.asm.std20.Executor;
+import dev.wateralt.mc.weapontroll.asm.std20.Std20Program;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.LivingEntity;
@@ -25,7 +25,7 @@ public class Util {
     pages.forEach(sb::append);
     String source = sb.toString();
     try {
-      Program prog = new Program(source, 16);
+      Std20Program prog = new Std20Program(source, 16);
       Executor.execute(prog, attacker, target, sw, 1024);
     } catch(AsmError err) {
       if(attacker instanceof ServerPlayerEntity spe) {

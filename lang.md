@@ -1,5 +1,7 @@
 # WeaponTroll Language
 
+This document has been moved to [doc/std20.md](doc/std20.md)
+
 ## Slots
 
 The program has access to 8 "slots", these are storage for
