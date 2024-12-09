@@ -32,11 +32,17 @@ import java.util.List;
 import java.util.Objects;
 
 public class Instructions {
-  
-  // Number manip instrs
+
+  // General instrs
   public static Object mov(Std20ProgramState ctx, Object val) {
     return val;
   }
+  public static double isnull(Std20ProgramState ctx, Object val) { 
+    if(val == null) return 1.0;
+    else return 0.0;
+  }
+  
+  // Number manip instrs
   public static double add(Std20ProgramState ctx, double a, double b) {
     return a + b;
   }

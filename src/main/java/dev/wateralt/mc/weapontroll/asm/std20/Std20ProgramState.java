@@ -44,6 +44,8 @@ public class Std20ProgramState implements Program.State {
     this.instructionsLeft = instructionLimit;
     this.pc = 0;
     this.slots = new Object[maxSlots];
+    this.slots[0] = user;
+    this.slots[1] = target;
   }
 
   // getters
@@ -69,13 +71,15 @@ public class Std20ProgramState implements Program.State {
       if(newEnergy < 0) {
         int deficit = -newEnergy;
         newEnergy = 0;
-        double damage = deficit / 50.0;
-        if(damage > manaSource.getHealth()) {
-          manaSource.kill(world);
-          stop = true;
-        } else {
-          manaSource.setHealth((float) (manaSource.getHealth() - damage));
-          manaSource.markHealthDirty();
+        double damage = deficit / EnergyCosts.HP_PER_ENERGY_DEPLETED;
+        if(!manaSource.isCreative()) {
+          if(damage > manaSource.getHealth()) {
+            manaSource.kill(world);
+            stop = true;
+          } else {
+            manaSource.setHealth((float) (manaSource.getHealth() - damage));
+            manaSource.markHealthDirty();
+          }
         }
       }
       pl.setEnergy(newEnergy);

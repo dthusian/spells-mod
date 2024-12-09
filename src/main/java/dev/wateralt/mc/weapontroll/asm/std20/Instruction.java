@@ -3,6 +3,7 @@ package dev.wateralt.mc.weapontroll.asm.std20;
 import dev.wateralt.mc.weapontroll.asm.AsmError;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,7 +14,9 @@ public record Instruction(Optional<Short> returnInto, String function, List<Arg>
   public record StringArg(String str) implements Arg {}
   
   private static Arg parseArg(String part) {
-    if(part.matches("^[0-9]")) {
+    if(part.isEmpty()) {
+      throw new RuntimeException("Unreachable?");
+    } else if(Character.isDigit(part.charAt(0))) {
       return new NumArg(Double.parseDouble(part));
     } else if(part.startsWith("$")) {
       return new SlotArg(Short.parseShort(part.substring(1)));
@@ -24,7 +27,7 @@ public record Instruction(Optional<Short> returnInto, String function, List<Arg>
   
   public static Instruction parse(String line) {
     try {
-      String[] splits = line.split("((?<==)|( ))");
+      String[] splits = Arrays.stream(line.splitWithDelimiters("[= ]", -1)).map(String::trim).filter(v -> !v.isEmpty()).toArray(String[]::new);
       int pos = 0;
       Optional<Short> returnInto = Optional.empty();
       String function;

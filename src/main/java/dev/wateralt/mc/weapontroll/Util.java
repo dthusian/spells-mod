@@ -1,8 +1,10 @@
 package dev.wateralt.mc.weapontroll;
 
 import dev.wateralt.mc.weapontroll.asm.AsmError;
-import dev.wateralt.mc.weapontroll.asm.std20.Executor;
+import dev.wateralt.mc.weapontroll.asm.Language;
+import dev.wateralt.mc.weapontroll.asm.Languages;
 import dev.wateralt.mc.weapontroll.asm.std20.Std20Program;
+import dev.wateralt.mc.weapontroll.asm.std20.Std20ProgramState;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.LivingEntity;
@@ -25,8 +27,12 @@ public class Util {
     pages.forEach(sb::append);
     String source = sb.toString();
     try {
-      Std20Program prog = new Std20Program(source, 16);
-      Executor.execute(prog, attacker, target, sw, 1024);
+      Language lang = Languages.identify(source);
+      if(lang != null) {
+        Std20Program prog = new Std20Program(source, 16);
+        Std20ProgramState state = prog.prepareRun(sw, attacker.getPos(), attacker, target);
+        state.run();
+      }
     } catch(AsmError err) {
       if(attacker instanceof ServerPlayerEntity spe) {
         spe.sendMessage(Text.of("Program failed: " + err.getMessage()));

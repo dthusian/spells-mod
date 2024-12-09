@@ -35,7 +35,7 @@ public class Std20Program implements Program {
           throw new AsmError("Slot %d is greater than the maximum (%d)".formatted(instr.returnInto().get(), maxSlots));
         }
         for(int j = 0; j < instr.args().size(); j++) {
-          if(instr.args().get(i) instanceof Instruction.SlotArg slot) {
+          if(instr.args().get(j) instanceof Instruction.SlotArg slot && slot.slot() >= maxSlots) {
             throw new AsmError("Slot %d is greater than the maximum (%d)".formatted(slot.slot(), maxSlots));
           }
         }
