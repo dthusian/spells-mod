@@ -1,5 +1,7 @@
 # std20 Language Reference
 
+Write `#lang std20` at the start of a book to use the std20 language.
+
 ## Slots
 
 The program has access to 8 "slots", these are storage for
@@ -100,11 +102,11 @@ The syntax `<T> = ` before an instruction indicates the instruction returns `T`.
     - Costs `10*2^power` energy, rounded up.
     - `power` is capped to 6.0, the power of a charged creeper or end crystal.
 - `placeblock <pos: vector> <block: string>` Places a block from your inventory to the position `pos`.
-    - Costs energy equal to hardness of the block, rounded up, minimum of 1.
+    - Costs 3 * hardness of the block, rounded up.
 - `destroyblock <pos: vector>` Destroys a block at position `pos`.
-    - Costs energy equal to hardness of the block, rounded up, minimum of 1.
+    - Costs 3 * hardness of the block, rounded up.
 - `lightning <pos: vector>` Summons lightning at position `pos`.
-    - Costs 20 energy
+    - Costs 100 energy
 - `<entity> = summon <pos: vector> <type: string>` Summons an entity. You can only pick from the list below:
     - `pig`: Costs 200 energy
     - `chicken`: Costs 200 energy

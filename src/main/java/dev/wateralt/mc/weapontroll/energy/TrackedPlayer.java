@@ -1,4 +1,4 @@
-package dev.wateralt.mc.weapontroll.playertracker;
+package dev.wateralt.mc.weapontroll.energy;
 
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.BossBarManager;

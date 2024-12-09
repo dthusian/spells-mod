@@ -1,4 +1,4 @@
-package dev.wateralt.mc.weapontroll.asm;
+package dev.wateralt.mc.weapontroll.asm.std20;
 
 import java.util.HashMap;
 
@@ -10,7 +10,7 @@ public class EnergyCosts {
   public static final double EXPLODE_COST_BASE = 2;
   public static final double PLACE_COST_FACTOR = 3;
   public static final double DESTROY_COST_FACTOR = 3;
-  public static final double LIGHTNING_COST = 20;
+  public static final double LIGHTNING_COST = 100;
   
   // Cost for each entity
   public static final HashMap<String, Integer> SUMMON_ENTITY_COSTS = new HashMap<>();

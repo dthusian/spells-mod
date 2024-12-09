@@ -1,6 +1,6 @@
-package dev.wateralt.mc.weapontroll.playertracker;
+package dev.wateralt.mc.weapontroll.energy;
 
-import dev.wateralt.mc.weapontroll.asm.EnergyCosts;
+import dev.wateralt.mc.weapontroll.asm.std20.EnergyCosts;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;

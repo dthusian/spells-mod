@@ -1,11 +1,9 @@
 package dev.wateralt.mc.weapontroll.asm.std20;
 
 import com.google.common.collect.Streams;
-import dev.wateralt.mc.weapontroll.Weapontroll;
 import dev.wateralt.mc.weapontroll.asm.AsmError;
-import dev.wateralt.mc.weapontroll.asm.EnergyCosts;
 import dev.wateralt.mc.weapontroll.asm.Program;
-import dev.wateralt.mc.weapontroll.playertracker.TrackedPlayer;
+import dev.wateralt.mc.weapontroll.energy.EnergyUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -65,27 +63,7 @@ public class Std20ProgramState implements Program.State {
   // mutators
   public void useEnergy(double amount) {
     if(manaSource != null) {
-      boolean stop = false;
-      TrackedPlayer pl = Weapontroll.PLAYER_TRACKER.get(manaSource);
-      int newEnergy = pl.getEnergy() - (int)Math.ceil(amount);
-      if(newEnergy < 0) {
-        int deficit = -newEnergy;
-        newEnergy = 0;
-        double damage = deficit / EnergyCosts.HP_PER_ENERGY_DEPLETED;
-        if(!manaSource.isCreative()) {
-          if(damage > manaSource.getHealth()) {
-            manaSource.kill(world);
-            stop = true;
-          } else {
-            manaSource.setHealth((float) (manaSource.getHealth() - damage));
-            manaSource.markHealthDirty();
-          }
-        }
-      }
-      pl.setEnergy(newEnergy);
-      if(stop) {
-        throw new AsmError("Out of energy!");
-      }
+      EnergyUtil.useEnergy(manaSource, amount);
     }
   }
 
