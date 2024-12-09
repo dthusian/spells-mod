@@ -12,8 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
-public class Instructions {
-  public static void setfire(@Nullable ServerPlayerEntity caster, ServerWorld world, int amp, Vec3d targetPos, @Nullable LivingEntity target) {
+public class Functions {
+  public static void setFireTo(@Nullable ServerPlayerEntity caster, ServerWorld world, int amp, Vec3d targetPos, @Nullable LivingEntity target) {
     EnergyUtil.useEnergy(caster, EnergyCosts.SET_FIRE);
     if(target == null) {
       BlockPos blockPos = Util.vecToPos(targetPos);
