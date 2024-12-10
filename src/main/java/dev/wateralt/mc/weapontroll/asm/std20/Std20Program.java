@@ -1,6 +1,7 @@
 package dev.wateralt.mc.weapontroll.asm.std20;
 
 import dev.wateralt.mc.weapontroll.asm.*;
+import dev.wateralt.mc.weapontroll.spell.ExecContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
@@ -70,7 +71,7 @@ public class Std20Program implements Program {
   }
   
   @Override
-  public Std20ProgramState prepareRun(ServerWorld world, Vec3d origin, LivingEntity user, LivingEntity target) {
-    return new Std20ProgramState(this, origin, world, user, target, 8, 1024);
+  public Std20ProgramState prepareRun(ExecContext ctx) {
+    return new Std20ProgramState(this, ctx, maxSlots, 1024);
   }
 }

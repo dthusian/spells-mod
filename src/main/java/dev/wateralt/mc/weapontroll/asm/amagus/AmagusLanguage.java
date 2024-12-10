@@ -6,6 +6,8 @@ import com.google.gson.JsonParser;
 import dev.wateralt.mc.weapontroll.asm.Language;
 import dev.wateralt.mc.weapontroll.asm.Program;
 
+import java.util.List;
+
 public class AmagusLanguage implements Language {
   private Object[] convertArray(JsonArray src) {
     return src.asList().stream().map(v -> {
@@ -16,9 +18,9 @@ public class AmagusLanguage implements Language {
   }
   
   @Override
-  public Program compile(String[] source) {
+  public Program compile(List<String> source) {
     String src = String.join("", source);
     JsonArray array = JsonParser.parseString(src).getAsJsonArray();
-    
+    return new AmagusProgram(convertArray(array));
   }
 }

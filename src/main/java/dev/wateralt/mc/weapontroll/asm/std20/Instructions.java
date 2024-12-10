@@ -2,6 +2,7 @@ package dev.wateralt.mc.weapontroll.asm.std20;
 
 import dev.wateralt.mc.weapontroll.Util;
 import dev.wateralt.mc.weapontroll.asm.AsmError;
+import dev.wateralt.mc.weapontroll.spell.ExecContext;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -33,106 +34,107 @@ import java.util.Objects;
 public class Instructions {
 
   // General instrs
-  public static Object mov(Std20ProgramState ctx, Object val) {
+  public static Object mov(Std20ProgramState state, Object val) {
     return val;
   }
-  public static double isnull(Std20ProgramState ctx, Object val) { 
+  public static double isnull(Std20ProgramState state, Object val) { 
     if(val == null) return 1.0;
     else return 0.0;
   }
   
   // Number manip instrs
-  public static double add(Std20ProgramState ctx, double a, double b) {
+  public static double add(Std20ProgramState state, double a, double b) {
     return a + b;
   }
-  public static double sub(Std20ProgramState ctx, double a, double b) {
+  public static double sub(Std20ProgramState state, double a, double b) {
     return a - b;
   }
-  public static double mul(Std20ProgramState ctx, double a, double b) {
+  public static double mul(Std20ProgramState state, double a, double b) {
     return a * b;
   }
   
-  public static double div(Std20ProgramState ctx, double a, double b) {
+  public static double div(Std20ProgramState state, double a, double b) {
     return a / b;
   }
-  public static double round(Std20ProgramState ctx, double a) {
+  public static double round(Std20ProgramState state, double a) {
     return Math.round(a);
   }
-  public static double sqrt(Std20ProgramState ctx, double a) {
+  public static double sqrt(Std20ProgramState state, double a) {
     return Math.sqrt(a);
   }
-  public static double sin(Std20ProgramState ctx, double a) {
+  public static double sin(Std20ProgramState state, double a) {
     return Math.sin(a);
   }
-  public static double cos(Std20ProgramState ctx, double a) {
+  public static double cos(Std20ProgramState state, double a) {
     return Math.cos(a);
   }
   
   // Branching instrs
-  public static void label(Std20ProgramState ctx, String label) { }
-  public static void jmpl(Std20ProgramState ctx, String label, double a, double b) {
-    if(a < b) ctx.jumpTo(label);
+  public static void label(Std20ProgramState state, String label) { }
+  public static void jmpl(Std20ProgramState state, String label, double a, double b) {
+    if(a < b) state.jumpTo(label);
   }
 
-  public static void jmple(Std20ProgramState ctx, String label, double a, double b) {
-    if(a <= b) ctx.jumpTo(label);
+  public static void jmple(Std20ProgramState state, String label, double a, double b) {
+    if(a <= b) state.jumpTo(label);
   }
 
-  public static void jmpg(Std20ProgramState ctx, String label, double a, double b) {
-    if(a > b) ctx.jumpTo(label);
+  public static void jmpg(Std20ProgramState state, String label, double a, double b) {
+    if(a > b) state.jumpTo(label);
   }
 
-  public static void jmpge(Std20ProgramState ctx, String label, double a, double b) {
-    if(a > b) ctx.jumpTo(label);
+  public static void jmpge(Std20ProgramState state, String label, double a, double b) {
+    if(a > b) state.jumpTo(label);
   }
-  public static void jmpe(Std20ProgramState ctx, String label, Object a, Object b) {
-    if(Objects.equals(a, b)) ctx.jumpTo(label);
+  public static void jmpe(Std20ProgramState state, String label, Object a, Object b) {
+    if(Objects.equals(a, b)) state.jumpTo(label);
   }
 
-  public static void jmpne(Std20ProgramState ctx, String label, Object a, Object b) {
-    if(!Objects.equals(a, b)) ctx.jumpTo(label);
+  public static void jmpne(Std20ProgramState state, String label, Object a, Object b) {
+    if(!Objects.equals(a, b)) state.jumpTo(label);
   }
   
   // Vector manip instrs
-  public static Vec3d makevec(Std20ProgramState ctx, double x, double y, double z) {
+  public static Vec3d makevec(Std20ProgramState state, double x, double y, double z) {
     return new Vec3d(x, y, z);
   }
-  public static double vx(Std20ProgramState ctx, Vec3d v) {
+  public static double vx(Std20ProgramState state, Vec3d v) {
     return v.getX();
   }
-  public static double vy(Std20ProgramState ctx, Vec3d v) {
+  public static double vy(Std20ProgramState state, Vec3d v) {
     return v.getY();
   }
-  public static double vz(Std20ProgramState ctx, Vec3d v) {
+  public static double vz(Std20ProgramState state, Vec3d v) {
     return v.getZ();
   }
-  public static Vec3d vadd(Std20ProgramState ctx, Vec3d a, Vec3d b) {
+  public static Vec3d vadd(Std20ProgramState state, Vec3d a, Vec3d b) {
     return a.add(b);
   }
-  public static Vec3d vsub(Std20ProgramState ctx, Vec3d a, Vec3d b) {
+  public static Vec3d vsub(Std20ProgramState state, Vec3d a, Vec3d b) {
     return a.subtract(b);
   }
-  public static Vec3d vmul(Std20ProgramState ctx, Vec3d a, double b) {
+  public static Vec3d vmul(Std20ProgramState state, Vec3d a, double b) {
     return a.multiply(b);
   }
-  public static Vec3d vdiv(Std20ProgramState ctx, Vec3d a, double b) {
+  public static Vec3d vdiv(Std20ProgramState state, Vec3d a, double b) {
     return a.multiply(1 / b);
   }
-  public static double vdist(Std20ProgramState ctx, Vec3d a) {
+  public static double vdist(Std20ProgramState state, Vec3d a) {
     return a.length();
   }
-  public static Vec3d vnorm(Std20ProgramState ctx, Vec3d a) {
+  public static Vec3d vnorm(Std20ProgramState state, Vec3d a) {
     return a.normalize();
   }
-  public static double vdot(Std20ProgramState ctx, Vec3d a, Vec3d b) {
+  public static double vdot(Std20ProgramState state, Vec3d a, Vec3d b) {
     return a.dotProduct(b);
   }
-  public static Vec3d vcross(Std20ProgramState ctx, Vec3d a, Vec3d b) {
+  public static Vec3d vcross(Std20ProgramState state, Vec3d a, Vec3d b) {
     return a.crossProduct(b);
   }
   
   // World query instrs
-  public static Entity findent(Std20ProgramState ctx, Vec3d pos, double slot) {
+  public static Entity findent(Std20ProgramState state, Vec3d pos, double slot) {
+    ExecContext ctx = state.getContext();
     Box box = new Box(pos.add(-4, -4, -4), pos.add(4, 4, 4));
     List<Entity> list = ctx.world().getEntitiesByType(TypeFilter.instanceOf(Entity.class), box, EntityPredicates.VALID_LIVING_ENTITY);
     list.sort((a, b) -> (int) Math.signum(a.getPos().distanceTo(pos) - b.getPos().distanceTo(pos)));
@@ -144,17 +146,18 @@ public class Instructions {
       return null;
     }
   }
-  public static Vec3d entpos(Std20ProgramState ctx, Entity ent) {
+  public static Vec3d entpos(Std20ProgramState state, Entity ent) {
     return ent.getPos();
   }
-  public static Vec3d entvel(Std20ProgramState ctx, Entity ent) {
+  public static Vec3d entvel(Std20ProgramState state, Entity ent) {
     return ent.getVelocity();
   }
-  public static Vec3d entfacing(Std20ProgramState ctx, Entity ent) {
+  public static Vec3d entfacing(Std20ProgramState state, Entity ent) {
     return ent.getRotationVector();
   }
-  public static double checkblcok(Std20ProgramState ctx, Vec3d pos, String block) {
-    if(pos.distanceTo(ctx.origin()) > EnergyCosts.LOCAL_RADIUS) {
+  public static double checkblock(Std20ProgramState state, Vec3d pos, String block) {
+    ExecContext ctx = state.getContext();
+    if(pos.distanceTo(ctx.targetPos()) > EnergyCosts.LOCAL_RADIUS) {
       ctx.useEnergyAt(pos, 1);
     }
     BlockPos blockPos = Util.vecToPos(pos);
@@ -173,20 +176,23 @@ public class Instructions {
   }
   
   // In-world effects
-  public static void accelent(Std20ProgramState ctx, Entity ent, Vec3d vel) {
+  public static void accelent(Std20ProgramState state, Entity ent, Vec3d vel) {
+    ExecContext ctx = state.getContext();
     ctx.useEnergyAt(ent.getPos(), vel.distanceTo(Vec3d.ZERO) * EnergyCosts.ACCEL_COST_FACTOR);
     ent.addVelocity(vel);
     ent.velocityModified = true;
   }
-  public static void damageent(Std20ProgramState ctx, Entity ent, double dmg) {
+  public static void damageent(Std20ProgramState state, Entity ent, double dmg) {
+    ExecContext ctx = state.getContext();
     ctx.useEnergyAt(ent.getPos(), Math.pow(dmg, EnergyCosts.DAMAGE_COST_POWER));
     ent.damage(ctx.world(), ctx.world().getDamageSources().magic(), (float)dmg);
   }
-  public static void mountent(Std20ProgramState ctx, Entity bottom, Entity top) {
+  public static void mountent(Std20ProgramState state, Entity bottom, Entity top) {
     top.dismountVehicle();
     top.startRiding(bottom, true);
   }
-  public static void placeblock(Std20ProgramState ctx, Vec3d pos, String block) {
+  public static void placeblock(Std20ProgramState state, Vec3d pos, String block) {
+    ExecContext ctx = state.getContext();
     // load item and check it's a blockitem
     Item item = Registries.ITEM.get(Identifier.of("minecraft", block));
     if(item == null) {
@@ -227,24 +233,28 @@ public class Instructions {
       ctx.useEnergyAt(pos, EnergyCosts.PLACE_COST_FACTOR * Math.max(Math.ceil(bi.getBlock().getHardness()), 1.0));
     }
   }
-  public static void destroyblock(Std20ProgramState ctx, Vec3d pos) {
+  public static void destroyblock(Std20ProgramState state, Vec3d pos) {
+    ExecContext ctx = state.getContext();
     BlockPos blockPos = Util.vecToPos(pos);
-    BlockState state = ctx.world().getBlockState(blockPos);
-    ctx.useEnergyAt(pos, EnergyCosts.DESTROY_COST_FACTOR * Math.max(Math.ceil(state.getBlock().getHardness()), 1.0));
+    BlockState blockState = ctx.world().getBlockState(blockPos);
+    ctx.useEnergyAt(pos, EnergyCosts.DESTROY_COST_FACTOR * Math.max(Math.ceil(blockState.getBlock().getHardness()), 1.0));
     ctx.world().breakBlock(blockPos, true, ctx.user());
   }
-  public static void explode(Std20ProgramState ctx, Vec3d pos, double power) {
+  public static void explode(Std20ProgramState state, Vec3d pos, double power) {
+    ExecContext ctx = state.getContext();
     power = Math.clamp(power, 0.0, 6.0);
     ctx.useEnergyAt(pos, EnergyCosts.EXPLODE_COST_FACTOR * Math.pow(EnergyCosts.EXPLODE_COST_BASE, power));
     ctx.world().createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), (float)power, World.ExplosionSourceType.MOB);
   }
-  public static void lightning(Std20ProgramState ctx, Vec3d pos) {
+  public static void lightning(Std20ProgramState state, Vec3d pos) {
+    ExecContext ctx = state.getContext();
     ctx.useEnergyAt(pos, EnergyCosts.LIGHTNING_COST);
     LightningEntity ent = new LightningEntity(EntityType.LIGHTNING_BOLT, ctx.world());
     ent.setPosition(pos);
     ctx.world().spawnEntity(ent);
   }
-  public static Entity summon(Std20ProgramState ctx, Vec3d pos, String entity) {
+  public static Entity summon(Std20ProgramState state, Vec3d pos, String entity) {
+    ExecContext ctx = state.getContext();
     Integer energyCost = EnergyCosts.SUMMON_ENTITY_COSTS.get(entity);
     if(energyCost == null) {
       throw new AsmError("Invalid entity");

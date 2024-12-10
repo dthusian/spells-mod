@@ -11,7 +11,5 @@ public class Weapontroll implements ModInitializer {
   public static final PlayerTracker PLAYER_TRACKER = new PlayerTracker();
   public static MinecraftServer SERVER;
   @Override
-  public void onInitialize() {
-    
-  }
+  public void onInitialize() {}
 }

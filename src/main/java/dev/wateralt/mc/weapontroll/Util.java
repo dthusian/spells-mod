@@ -3,8 +3,10 @@ package dev.wateralt.mc.weapontroll;
 import dev.wateralt.mc.weapontroll.asm.AsmError;
 import dev.wateralt.mc.weapontroll.asm.Language;
 import dev.wateralt.mc.weapontroll.asm.Languages;
+import dev.wateralt.mc.weapontroll.asm.Program;
 import dev.wateralt.mc.weapontroll.asm.std20.Std20Program;
 import dev.wateralt.mc.weapontroll.asm.std20.Std20ProgramState;
+import dev.wateralt.mc.weapontroll.spell.ExecContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.LivingEntity;
@@ -29,8 +31,8 @@ public class Util {
     try {
       Language lang = Languages.identify(source);
       if(lang != null) {
-        Std20Program prog = new Std20Program(source, 16);
-        Std20ProgramState state = prog.prepareRun(sw, attacker.getPos(), attacker, target);
+        Program prog = lang.compile(pages);
+        Program.State state = prog.prepareRun(new ExecContext(sw, attacker, target, attacker.getPos()));
         state.run();
       }
     } catch(AsmError err) {

@@ -4,6 +4,7 @@ import com.google.common.collect.Streams;
 import dev.wateralt.mc.weapontroll.asm.AsmError;
 import dev.wateralt.mc.weapontroll.asm.Program;
 import dev.wateralt.mc.weapontroll.energy.EnergyUtil;
+import dev.wateralt.mc.weapontroll.spell.ExecContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,70 +20,29 @@ import java.util.stream.Stream;
 
 public class Std20ProgramState implements Program.State {
   Std20Program program;
-  Vec3d origin;
-  ServerWorld world;
-  LivingEntity user;
-  @Nullable
-  LivingEntity target;
-  @Nullable
-  ServerPlayerEntity manaSource;
+  ExecContext ctx;
   int instructionsLeft;
   int pc;
   Object[] slots;
 
-  public Std20ProgramState(Std20Program program, Vec3d origin, ServerWorld world, LivingEntity user, @Nullable LivingEntity target, int maxSlots, int instructionLimit) {
+  public Std20ProgramState(Std20Program program, ExecContext ctx, int maxSlots, int instructionLimit) {
     this.program = program;
-    this.origin = origin;
-    this.world = world;
-    this.user = user;
-    this.target = target;
-    if(user instanceof ServerPlayerEntity spe) {
-      manaSource = spe;
-    }
+    this.ctx = ctx;
     this.instructionsLeft = instructionLimit;
     this.pc = 0;
     this.slots = new Object[maxSlots];
-    this.slots[0] = user;
-    this.slots[1] = target;
+    this.slots[0] = ctx.user();
+    this.slots[1] = ctx.target();
   }
 
-  // getters
-  public Vec3d origin() {
-    return origin;
-  }
-  public ServerWorld world() {
-    return world;
-  }
-  public LivingEntity user() { return user; }
-  public LivingEntity target() { return target; }
-  public ServerPlayerEntity manaSource() {
-    return manaSource;
-  }
+  public Std20Program getProgram() { return program; }
+  public ExecContext getContext() { return ctx; }
   public int getInstructionsLeft() { return instructionsLeft; }
-  
-  // mutators
-  public void useEnergy(double amount) {
-    if(manaSource != null) {
-      EnergyUtil.useEnergy(manaSource, amount);
-    }
-  }
-
-  public void useEnergyAt(Vec3d pos, double amount) {
-    double dist = origin.distanceTo(pos);
-    double factor;
-    if(dist <= EnergyCosts.LOCAL_RADIUS) {
-      factor = 1;
-    } else {
-      factor = 1 + 0.001 * Math.pow(dist - EnergyCosts.LOCAL_RADIUS, 2);
-    }
-    useEnergy(factor * amount);
-  }
 
   public void jumpTo(String label) {
     pc = this.program.getLabels().get(label);
   }
   
-  // run
   private String printType(Object obj) {
     if(obj != null) return printType(obj.getClass());
     else return "<null>";

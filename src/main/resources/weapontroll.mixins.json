@@ -4,6 +4,7 @@
   "package": "dev.wateralt.mc.weapontroll.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "CommandManagerMixin",
     "ItemMixin",
     "ServerPlayerEntityMixin",
     "ServerWorldMixin"
