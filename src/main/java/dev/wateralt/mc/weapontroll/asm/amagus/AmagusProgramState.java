@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.Box;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +31,11 @@ public class AmagusProgramState implements Program.State {
     if(name.equals("caster")) {
       return List.of(ctx.user());
     } else if(name.equals("target")) {
-      return List.of(ctx.target());
+      if(ctx.target() != null) {
+        return List.of(ctx.target());
+      } else {
+        return List.of();
+      }
     } else if(name.equals("everyone")) {
       return ctx.world().getEntitiesByType(
         TypeFilter.instanceOf(Entity.class),
@@ -44,30 +49,24 @@ public class AmagusProgramState implements Program.State {
     }
   }
   
-  public static Object eval(ExecContext ctx, Object[] cmd) {
+  public Object eval(ExecContext ctx, Object[] cmd) {
     if(cmd[0] instanceof String funcName) {
       Functions.Def funcDef = Functions.FUNCTIONS.get(funcName);
       if(funcDef == null) throw new AsmError("No function named " + funcName);
       // validate args
       Method method = funcDef.method();
+      Object[] args;
       if(method.getParameters()[1].isVarArgs()) {
         // varargs recieves everything raw
-        Object[] args = new Object[]{ ctx, Arrays.copyOfRange(cmd, 1, cmd.length) };
-        Object ret;
-        try {
-          ret = method.invoke(null, args);
-        } catch(Exception err) {
-          throw new RuntimeException(err);
-        }
-        return ret;
+        args = new Object[]{ this, Arrays.copyOfRange(cmd, 1, cmd.length) };
       } else {
         // non-varargs evaluates subexpressions
         int argsLen = method.getParameterCount();
         if(argsLen != cmd.length) {
           throw new AsmError("Incorrect number of arguments for " + funcName);
         }
-        Object[] args = new Object[argsLen];
-        args[0] = ctx;
+        args = new Object[argsLen];
+        args[0] = this;
         for(int i = 1; i < cmd.length; i++) {
           if(cmd[i] instanceof Object[] subCmd) {
             args[i] = eval(ctx, subCmd);
@@ -77,14 +76,19 @@ public class AmagusProgramState implements Program.State {
             throw new RuntimeException("Invalid S-expression");
           }
         }
-        Object ret;
-        try {
-          ret = method.invoke(null, args);
-        } catch(Exception err) {
+      }
+
+      Object ret;
+      try {
+        ret = method.invoke(null, args);
+      } catch(Exception err) {
+        if(err.getCause() instanceof AsmError err2) {
+          throw err2;
+        } else {
           throw new RuntimeException(err);
         }
-        return ret;
       }
+      return ret;
     } else {
       throw new AsmError("Unexpected array in command-name");
     }
