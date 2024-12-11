@@ -12,18 +12,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class TrackedPlayer {
-  private MinecraftServer server;
-  private UUID uuid;
-  private int energy;
-  private int maxEnergy;
+  private final MinecraftServer server;
+  private final UUID uuid;
   @Nullable
   private CommandBossBar energyBar;
   
-  public TrackedPlayer(MinecraftServer server, UUID uuid, int energy, int maxEnergy) {
+  public TrackedPlayer(MinecraftServer server, UUID uuid) {
     this.server = server;
     this.uuid = uuid;
-    this.energy = energy;
-    this.maxEnergy = maxEnergy;
     this.energyBar = null;
   }
   
@@ -31,45 +27,29 @@ public class TrackedPlayer {
     return server.getPlayerManager().getPlayer(this.uuid);
   }
   
-  public int getEnergy() {
-    return energy;
-  }
-  
-  public int getMaxEnergy() {
-    return maxEnergy;
-  }
-  
-  public void setEnergy(int newEnergy) {
-    energy = newEnergy;
-  }
-  
-  public void addEnergy(int amount) {
-    energy += amount;
-    if(energy < 0) energy = 0;
-    if(energy > maxEnergy) energy = maxEnergy;
-  }
-  
   public void updateAndShowEnergyBar() {
-    if(energyBar == null) {
-      BossBarManager bbm = server.getBossBarManager();
-      CommandBossBar bar = bbm.add(Identifier.of("weapontroll_energybar." + uuid.toString()), Text.of(formatEnergy()));
-      bar.setMaxValue(maxEnergy);
-      bar.setValue(energy);
-      bar.setColor(BossBar.Color.BLUE);
-      bar.addPlayer(this.server.getPlayerManager().getPlayer(this.uuid));
-      this.energyBar = bar;
+    ServerPlayerEntity spl = this.server.getPlayerManager().getPlayer(this.uuid);
+    if(spl != null && !spl.isDisconnected()) {
+      int energy = EnergyUtil.getEnergy(spl);
+      int maxEnergy = EnergyUtil.computeMaxEnergy(spl);
+      Text energyStr = Text.of(formatEnergy(energy, maxEnergy));
+      if(energyBar == null) {
+        BossBarManager bbm = server.getBossBarManager();
+        CommandBossBar bar = bbm.add(Identifier.of("weapontroll:weapontroll_energybar." + uuid.toString()), energyStr);
+        bar.setColor(BossBar.Color.BLUE);
+        bar.addPlayer(spl);
+        this.energyBar = bar;
+      }
+      energyBar.setMaxValue(maxEnergy);
+      energyBar.setValue(energy);
+      energyBar.setName(energyStr);
+      energyBar.setVisible(true);
+    } else if(energyBar != null) {
+      energyBar.setVisible(false);
     }
-    energyBar.setValue(energy);
-    energyBar.setMaxValue(maxEnergy);
-    energyBar.setName(Text.of(formatEnergy()));
-    energyBar.setVisible(true);
   }
   
-  public void hideEnergyBar() {
-    if(energyBar != null) energyBar.setVisible(false);
-  }
-  
-  public String formatEnergy() {
+  public String formatEnergy(int energy, int maxEnergy) {
     return "Energy %d / %d".formatted(energy, maxEnergy);
   }
 }

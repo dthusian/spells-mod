@@ -1,6 +1,7 @@
 package dev.wateralt.mc.weapontroll.mixin;
 
 import dev.wateralt.mc.weapontroll.Weapontroll;
+import dev.wateralt.mc.weapontroll.energy.PlayerTracker;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
@@ -26,10 +27,11 @@ import java.util.stream.Collectors;
 public abstract class ServerWorldMixin {
   @Inject(method = "<init>", at = @At("RETURN"))
   private void init(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld, long seed, List spawners, boolean shouldTickTime, RandomSequencesState randomSequencesState, CallbackInfo ci) {
+    Weapontroll.SERVER = server;
     BossBarManager bbm = server.getBossBarManager();
     List<Identifier> bossbarIds = new ArrayList<>(bbm.getIds());
     bossbarIds.forEach(v -> {
-      if(v.toString().startsWith("weapontroll_energybar.")) {
+      if(v.getPath().startsWith("weapontroll_energybar.")) {
         bbm.remove(bbm.get(v));
       }
     });
@@ -38,7 +40,7 @@ public abstract class ServerWorldMixin {
   @Inject(method = "tick", at = @At("HEAD"))
   private void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
     ServerWorld that = (ServerWorld) (Object) this;
-    if(that.getTime() % 20 == 0) {
+    if(that.getTime() % PlayerTracker.TRACK_INTERVAL == 0) {
       Weapontroll.PLAYER_TRACKER.periodic();
     }
   }

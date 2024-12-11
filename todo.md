@@ -1,9 +1,14 @@
 - std20
   - Instruction.toString
-- add new damage type for mana depletion
-- energy cost for mounting
-- strict conservation of kinetic energy
-- add more world interactions
-  - particles
-  - status effects
-  - item manip
+  - add more world interactions
+    - particles
+    - status effects
+    - item manip
+- magic
+  - add more world interactions
+    - placing blocks
+- energy
+  - switch energy over to scoreboard
+  - add new damage type for mana depletion
+  - energy cost for mounting
+  - strict conservation of kinetic energy
