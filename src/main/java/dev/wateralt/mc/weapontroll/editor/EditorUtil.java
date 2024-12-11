@@ -7,7 +7,6 @@ import net.minecraft.util.Formatting;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class EditorUtil {

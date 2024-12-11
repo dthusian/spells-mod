@@ -20,7 +20,7 @@ public class Functions {
     
     public Object[] createDefault() {
       if(method.getParameters()[1].isVarArgs()) {
-        return new Object[] { name };
+        return new Object[] { name, new Object[0] };
       } else {
         Object[] obj = new Object[getArgTypes().size() + 1];
         obj[0] = name;
@@ -66,6 +66,5 @@ public class Functions {
       if(v.getAnnotation(AmagusFunc.class) != null)
         FUNCTIONS.put(v.getName(), new Def(v.getName(), v.getAnnotation(AmagusFunc.class), v));
     });
-    Weapontroll.LOGGER.info(FUNCTIONS.toString());
   }
 }

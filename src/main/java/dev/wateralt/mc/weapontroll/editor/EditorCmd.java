@@ -211,7 +211,7 @@ public class EditorCmd {
     return formatDeleteBtn(path, name, Formatting.GOLD);
   }
   
-  private static Text formatCode(Object[] sExpression, int[] path, int[] selected) {
+  private static Text formatCode(Object[] sExpression, int[] path, int[] selected, int indentation) {
     MutableText ret = Text.literal("");
     List<Text> buf = ret.getSiblings();
     buf.add(Text.of("("));
@@ -221,18 +221,29 @@ public class EditorCmd {
     Functions.Def funcDef = Functions.FUNCTIONS.get(funcName);
     String[] splits = funcDef.metadata().format().split(" ");
     for(int i = 0; i < splits.length; i++) {
+      int[] currentPath = EditorUtil.snoc(path, currentArg);
       if(splits[i].startsWith("%")) {
         Type type = Type.parse(splits[i]);
-        int[] currentPath = EditorUtil.snoc(path, currentArg);
-        if(i != 0) buf.add(Text.of(" "));
-        if(sExpression[currentArg] == null) {
-          buf.add(formatSelectBtn(currentPath, type, Arrays.equals(currentPath, selected), true));
-        } else if(sExpression[currentArg] instanceof String constant) {
-          buf.add(formatConst(currentPath, constant));
-        } else if(sExpression[currentArg] instanceof Object[] subExpression) {
-          buf.add(formatCode(subExpression, currentPath, selected));
+        if(type.equals(Type.EFFECT_LIST)) {
+          buf.add(Text.of("\n"));
+          if(sExpression[currentArg] instanceof Object[] varargs) {
+            buf.add(formatCodeList(varargs, currentPath, selected, indentation + 1));
+          } else {
+            throw new StructuralError();
+          }
+        } else {
+          if(i != 0) buf.add(Text.of(" "));
+          if(sExpression[currentArg] == null) {
+            buf.add(formatSelectBtn(currentPath, type, Arrays.equals(currentPath, selected), true));
+          } else if(sExpression[currentArg] instanceof String constant) {
+            buf.add(formatConst(currentPath, constant));
+          } else if(sExpression[currentArg] instanceof Object[] subExpression) {
+            buf.add(formatCode(subExpression, currentPath, selected, indentation));
+          } else {
+            throw new StructuralError();
+          }
+          currentArg++;
         }
-        currentArg++;
       } else {
         if(i == 0) {
           buf.add(formatDeleteBtn(path, splits[i], Formatting.WHITE));
@@ -256,7 +267,7 @@ public class EditorCmd {
       if(cmdo == null) {
         buf.add(formatSelectBtn(currentPath, Type.EFFECT, Arrays.equals(currentPath, selected), false));
       } else if(cmdo instanceof Object[] cmd) {
-        buf.add(formatCode(cmd, EditorUtil.snoc(path, i), selected));
+        buf.add(formatCode(cmd, EditorUtil.snoc(path, i), selected, 0));
       }
       buf.add(Text.of("\n"));
     }
