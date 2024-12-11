@@ -1,14 +1,9 @@
 package dev.wateralt.mc.weapontroll.asm.amagus;
 
-import dev.wateralt.mc.weapontroll.Util;
 import dev.wateralt.mc.weapontroll.spell.ExecContext;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import java.lang.reflect.Method;
@@ -17,9 +12,23 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Functions {
-  public record Def(String name, AmagusFunc metadata, Method method) { }
+  public record Def(String name, AmagusFunc metadata, Method method) {
+    public List<Type> getArgTypes() {
+      return Arrays.stream(metadata.format().split(" ")).filter(v -> v.startsWith("%")).map(Type::parse).toList();
+    }
+    
+    public Object[] createDefault() {
+      if(method.getParameters()[1].isVarArgs()) {
+        return new Object[] { name };
+      } else {
+        Object[] obj = new Object[getArgTypes().size()];
+        obj[0] = name;
+        return obj;
+      }
+    }
+  }
 
-  @AmagusFunc(format = "set %e on fire")
+  @AmagusFunc(format = "set %e on fire", returns = Type.EFFECT)
   public static void setFire(AmagusProgramState state, List<Entity> entities) {
     ExecContext ctx = state.getContext();
     entities.forEach(v -> {
@@ -28,13 +37,10 @@ public class Functions {
     });
   }
   
-  @AmagusFunc(format = "fire projectile with effects %xs")
+  @AmagusFunc(format = "fire projectile with effects %x", returns = Type.EFFECT)
   public static void makeProjectile(AmagusProgramState state, Object... effects) {}
   
-  @AmagusFunc(format = "in front of %e", returns = Type.POSITION_LIST)
-  public static void front(AmagusProgramState state, List<Entity> entities) {}
-  
-  @AmagusFunc(format = "lightning at %p")
+  @AmagusFunc(format = "lightning at %p", returns = Type.EFFECT)
   public static void lightningPos(AmagusProgramState state, List<Vec3d> positions) {
     positions.forEach(v -> {
       state.getContext().useEnergy(EnergyCosts.LIGHTNING);
@@ -44,10 +50,13 @@ public class Functions {
     });
   }
   
-  @AmagusFunc(format = "lightning at %p")
+  @AmagusFunc(format = "lightning at %p", returns = Type.EFFECT)
   public static void lightningEntity(AmagusProgramState state, List<Entity> entities) {
     lightningPos(state, AmagusUtil.entityToPos(entities));
   }
+
+  @AmagusFunc(format = "in front of %e", returns = Type.POSITION)
+  public static void front(AmagusProgramState state, List<Entity> entities) {}
   
   public static final HashMap<String, Def> FUNCTIONS = new HashMap<>();
   
