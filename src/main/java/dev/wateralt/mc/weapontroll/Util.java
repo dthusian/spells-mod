@@ -21,7 +21,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.List;
 
 public class Util {
-  public static void executeProgram(ItemStack stack, LivingEntity target, LivingEntity attacker, ServerWorld sw) {
+  public static void executeProgram(ItemStack stack, ExecContext ctx) {
     WritableBookContentComponent content = stack.get(DataComponentTypes.WRITABLE_BOOK_CONTENT);
     if(content == null) return;
     StringBuilder sb = new StringBuilder();
@@ -32,15 +32,15 @@ public class Util {
       Language lang = Languages.identify(source);
       if(lang != null) {
         Program prog = lang.compile(pages);
-        Program.State state = prog.prepareRun(new ExecContext(sw, attacker, target, attacker.getPos()));
+        Program.State state = prog.prepareRun(ctx);
         state.run();
       }
     } catch(AsmError err) {
-      if(attacker instanceof ServerPlayerEntity spe) {
+      if(ctx.user() instanceof ServerPlayerEntity spe) {
         spe.sendMessage(Text.of("Program failed: " + err.getMessage()));
       }
     } catch(Exception err) {
-      if(attacker instanceof ServerPlayerEntity spe) {
+      if(ctx.user() instanceof ServerPlayerEntity spe) {
         spe.sendMessage(Text.of("Program failed with an unknown error"));
       }
       Weapontroll.LOGGER.warn("Exception occurred while executing program: " + err);

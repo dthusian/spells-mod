@@ -1,6 +1,7 @@
 package dev.wateralt.mc.weapontroll.mixin;
 
 import dev.wateralt.mc.weapontroll.Util;
+import dev.wateralt.mc.weapontroll.spell.ExecContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,7 +18,7 @@ public abstract class ItemMixin {
   private void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfoReturnable<Boolean> cir) {
     if(stack.getItem() == Items.WRITABLE_BOOK) {
       if(attacker.getWorld() instanceof ServerWorld sw) {
-        Util.executeProgram(stack, target, attacker, sw);
+        Util.executeProgram(stack, new ExecContext(sw, attacker, target, target.getPos(), attacker.getRotationVector()));
       }
     }
   }

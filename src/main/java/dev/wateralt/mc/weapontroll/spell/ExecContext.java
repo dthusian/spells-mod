@@ -9,21 +9,27 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class ExecContext {
+  // user, target != null: User hit target (with melee or projectile)
+  // user == target: User casted on self (shift-click)
+  // target == null: Fired from projectile and didn't hit anything
+  
   private ServerWorld world;
   private LivingEntity user;
-  @Nullable
   private LivingEntity target;
   private Vec3d targetPos;
+  private Vec3d direction;
   @Nullable
   private ServerPlayerEntity manaSource;
   
-  public ExecContext(ServerWorld world, LivingEntity user, @Nullable LivingEntity target, Vec3d targetPos) {
+  public ExecContext(ServerWorld world, LivingEntity user, LivingEntity target, Vec3d targetPos, Vec3d direction) {
     this.world = world;
     this.user = user;
     this.target = target;
     if(user instanceof ServerPlayerEntity spe) {
       manaSource = spe;
     }
+    this.targetPos = targetPos;
+    this.direction = direction;
   }
 
   public ServerWorld world() {
@@ -46,6 +52,11 @@ public class ExecContext {
     return manaSource;
   }
 
+  public void setTarget(LivingEntity target) {
+    this.target = target;
+    this.targetPos = target.getPos();
+  }
+  
   public void useEnergy(double energy) {
     if(manaSource != null) {
       EnergyUtil.useEnergy(manaSource, energy);
