@@ -1,7 +1,7 @@
 package dev.wateralt.mc.weapontroll.asm.magic;
 
 import dev.wateralt.mc.weapontroll.asm.Program;
-import dev.wateralt.mc.weapontroll.spell.ExecContext;
+import dev.wateralt.mc.weapontroll.asm.ExecContext;
 
 public class MagicProgram implements Program {
   private String[] instructions;

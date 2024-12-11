@@ -3,14 +3,9 @@ package dev.wateralt.mc.weapontroll.asm.std20;
 import com.google.common.collect.Streams;
 import dev.wateralt.mc.weapontroll.asm.AsmError;
 import dev.wateralt.mc.weapontroll.asm.Program;
-import dev.wateralt.mc.weapontroll.energy.EnergyUtil;
-import dev.wateralt.mc.weapontroll.spell.ExecContext;
+import dev.wateralt.mc.weapontroll.asm.ExecContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

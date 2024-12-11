@@ -1,10 +1,5 @@
 package dev.wateralt.mc.weapontroll.asm;
 
-import dev.wateralt.mc.weapontroll.spell.ExecContext;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
-
 public interface Program {
   interface State {
     /// Runs the program until the next wait point,

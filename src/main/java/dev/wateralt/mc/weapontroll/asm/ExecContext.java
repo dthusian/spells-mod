@@ -1,4 +1,4 @@
-package dev.wateralt.mc.weapontroll.spell;
+package dev.wateralt.mc.weapontroll.asm;
 
 import dev.wateralt.mc.weapontroll.asm.std20.EnergyCosts;
 import dev.wateralt.mc.weapontroll.energy.EnergyUtil;
@@ -51,6 +51,7 @@ public class ExecContext {
   public ServerPlayerEntity manaSource() {
     return manaSource;
   }
+  public Vec3d direction() { return direction; }
 
   public void setTarget(LivingEntity target) {
     this.target = target;

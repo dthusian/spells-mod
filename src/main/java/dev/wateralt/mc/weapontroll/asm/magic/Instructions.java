@@ -1,15 +1,16 @@
 package dev.wateralt.mc.weapontroll.asm.magic;
 
 import dev.wateralt.mc.weapontroll.Util;
-import dev.wateralt.mc.weapontroll.spell.ExecContext;
+import dev.wateralt.mc.weapontroll.asm.ExecContext;
 import static dev.wateralt.mc.weapontroll.asm.magic.InstructionStatus.DEFAULT;
-import net.minecraft.block.BlockState;
+
+import dev.wateralt.mc.weapontroll.projectile.Projectile;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Function;
 
@@ -49,12 +50,20 @@ public class Instructions {
   }
   
   public static InstructionStatus projectile(MagicProgramState state) {
-    throw new RuntimeException("todo");
+    ExecContext ctx = state.ctx();
+    String[] instructions = state.program().getInstructions();
+    String source = "#lang magic\n" + String.join("\n", Arrays.copyOfRange(instructions, state.pc() + 1, instructions.length));
+    Projectile.create(ctx.world(), ctx.user(), ctx.targetPos(), ctx.direction(), source);
+    return InstructionStatus.HALT;
   }
   
   public static final HashMap<String, Function<MagicProgramState, InstructionStatus>> INSTRUCTIONS = new HashMap<>();
   
   static {
+    INSTRUCTIONS.put("self", Instructions::self);
+    INSTRUCTIONS.put("fire", Instructions::fire);
+    INSTRUCTIONS.put("heal", Instructions::heal);
+    INSTRUCTIONS.put("explode", Instructions::explode);
     INSTRUCTIONS.put("projectile", Instructions::projectile);
   }
 }

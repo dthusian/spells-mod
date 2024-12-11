@@ -2,7 +2,7 @@ package dev.wateralt.mc.weapontroll.asm.magic;
 
 import dev.wateralt.mc.weapontroll.asm.AsmError;
 import dev.wateralt.mc.weapontroll.asm.Program;
-import dev.wateralt.mc.weapontroll.spell.ExecContext;
+import dev.wateralt.mc.weapontroll.asm.ExecContext;
 
 import java.util.function.Function;
 

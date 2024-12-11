@@ -1,7 +1,7 @@
 package dev.wateralt.mc.weapontroll.mixin;
 
 import dev.wateralt.mc.weapontroll.Util;
-import dev.wateralt.mc.weapontroll.spell.ExecContext;
+import dev.wateralt.mc.weapontroll.asm.ExecContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,10 +21,10 @@ public abstract class ServerPlayerEntityMixin {
       ItemStack stack2 = that.getOffHandStack();
       ExecContext ctx = new ExecContext(that.getServerWorld(), that, that, that.getPos(), that.getRotationVector());
       if(stack1 != null && stack1.getItem().equals(Items.WRITABLE_BOOK)) {
-        Util.executeProgram(stack1, ctx);
+        Util.executeBook(stack1, ctx);
       }
       if(stack2 != null && stack2.getItem().equals(Items.WRITABLE_BOOK)) {
-        Util.executeProgram(stack2, ctx);
+        Util.executeBook(stack2, ctx);
       }
     }
   }

@@ -2,7 +2,7 @@ package dev.wateralt.mc.weapontroll.asm.std20;
 
 import dev.wateralt.mc.weapontroll.Util;
 import dev.wateralt.mc.weapontroll.asm.AsmError;
-import dev.wateralt.mc.weapontroll.spell.ExecContext;
+import dev.wateralt.mc.weapontroll.asm.ExecContext;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;

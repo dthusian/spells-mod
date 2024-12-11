@@ -8,7 +8,9 @@ public class Languages {
   public static final MagicLanguage MAGIC = new MagicLanguage();
   
   public static Language identify(String src) {
-    String firstLine = src.substring(0, src.indexOf('\n')).trim();
+    int linePos = src.indexOf('\n');
+    if(linePos == -1) linePos = src.length();
+    String firstLine = src.substring(0, linePos).trim();
     if(firstLine.equals("#lang lazy")) {
       throw new AsmError("The runtime was too lazy to your program");
     } else if(firstLine.equals("#lang std20")) {

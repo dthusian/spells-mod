@@ -1,10 +1,7 @@
 package dev.wateralt.mc.weapontroll.asm.std20;
 
 import dev.wateralt.mc.weapontroll.asm.*;
-import dev.wateralt.mc.weapontroll.spell.ExecContext;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
+import dev.wateralt.mc.weapontroll.asm.ExecContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
