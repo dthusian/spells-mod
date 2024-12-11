@@ -3,6 +3,7 @@ package dev.wateralt.mc.weapontroll.asm.std20;
 import dev.wateralt.mc.weapontroll.Util;
 import dev.wateralt.mc.weapontroll.asm.AsmError;
 import dev.wateralt.mc.weapontroll.asm.ExecContext;
+import dev.wateralt.mc.weapontroll.mixin.ServerPlayerEntityAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -18,8 +19,10 @@ import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
@@ -188,8 +191,11 @@ public class Instructions {
     ent.damage(ctx.world(), ctx.world().getDamageSources().magic(), (float)dmg);
   }
   public static void mountent(Std20ProgramState state, Entity bottom, Entity top) {
-    top.dismountVehicle();
     top.startRiding(bottom, true);
+    if(bottom instanceof ServerPlayerEntity spe) {
+      ServerPlayNetworkHandler handler = ((ServerPlayerEntityAccessor) spe).getNetworkHandler();
+      handler.sendPacket(new EntityPassengersSetS2CPacket(spe));
+    }
   }
   public static void placeblock(Std20ProgramState state, Vec3d pos, String block) {
     ExecContext ctx = state.getContext();

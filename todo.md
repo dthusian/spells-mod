@@ -1,10 +1,9 @@
-- std2.0
+- std20
   - Instruction.toString
-  - update docs for std2.0
 - add new damage type for mana depletion
-- implement place/destroy block
 - energy cost for mounting
+- strict conservation of kinetic energy
 - add more world interactions
-  - summoning entities
   - particles
   - status effects
+  - item manip
