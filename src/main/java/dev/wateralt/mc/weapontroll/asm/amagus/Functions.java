@@ -61,6 +61,9 @@ public class Functions {
   public static final HashMap<String, Def> FUNCTIONS = new HashMap<>();
   
   static {
-    Arrays.stream(Functions.class.getMethods()).forEach(v -> FUNCTIONS.put(v.getName(), new Def(v.getName(), v.getAnnotation(AmagusFunc.class), v)));
+    Arrays.stream(Functions.class.getMethods()).forEach(v -> {
+      if(v.getAnnotation(AmagusFunc.class) != null)
+        FUNCTIONS.put(v.getName(), new Def(v.getName(), v.getAnnotation(AmagusFunc.class), v));
+    });
   }
 }

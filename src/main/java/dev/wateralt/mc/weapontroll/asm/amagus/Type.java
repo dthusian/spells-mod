@@ -31,7 +31,7 @@ public enum Type {
   
   public String toHumanReadable() {
     switch(this) {
-      case EFFECT -> { return "<void>"; }
+      case EFFECT -> { return "<effect>"; }
       case ENTITY -> { return "<entity>"; }
       case POSITION -> { return "<position>"; }
       case EFFECT_LIST -> { return "<...>"; }

@@ -13,6 +13,7 @@ public class AmagusLanguage implements Language {
     return src.asList().stream().map(v -> {
       if(v.isJsonArray()) return convertArray(v.getAsJsonArray());
       else if(v.isJsonPrimitive() && v.getAsJsonPrimitive().isString()) return v.getAsString();
+      else if(v.isJsonNull()) return null;
       else throw new RuntimeException("Invalid JSON");
     }).toArray();
   }
