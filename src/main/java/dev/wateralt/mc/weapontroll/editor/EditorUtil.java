@@ -38,11 +38,11 @@ public class EditorUtil {
   public static int[] stoia(String s) {
     String rmStart = s.substring(1);
     if(rmStart.isEmpty()) return new int[0];
-    return Arrays.stream(rmStart.split(",")).mapToInt(Integer::parseInt).toArray();
+    return Arrays.stream(rmStart.split("_")).mapToInt(Integer::parseInt).toArray();
   }
 
   public static String iatos(int[] ia) {
-    return "A" + String.join(",", Arrays.stream(ia).mapToObj(Integer::toString).toList());
+    return "A" + String.join("_", Arrays.stream(ia).mapToObj(Integer::toString).toList());
   }
 
   public static Style makeStyle(Formatting col, boolean underline) {
@@ -63,6 +63,14 @@ public class EditorUtil {
 
   public static void traverseSet(AtomicReference<Object[]> tree, int[] path, int depth, Object val) {
     Object node = tree.get();
+    if(path.length == 0) {
+      if(val instanceof Object[] valArr) {
+        tree.set(valArr);
+        return;
+      } else {
+        throw new RuntimeException("idk what to do here");
+      }
+    }
     for(int i = 0; i < depth; i++) {
       if(node instanceof Object[] nodeArr) {
         if(i == depth - 1) {
@@ -72,13 +80,6 @@ public class EditorUtil {
         }
       } else {
         throw new StructuralError();
-      }
-    }
-    if(path.length <= depth) {
-      if(val instanceof Object[] valArr) {
-        tree.set(valArr);
-      } else {
-        throw new RuntimeException("idk what to do here");
       }
     }
   }

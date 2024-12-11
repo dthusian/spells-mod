@@ -68,6 +68,9 @@ public class EditorCmd {
       } catch(AsmError err) {
         v.getSource().sendError(Text.of("Parse error, invalid code"));
         return -1;
+      } catch(CustomEditorError err) {
+        v.getSource().sendError(Text.of(err.getMessage()));
+        return -1;
       } catch(Exception err) {
         v.getSource().sendError(Text.of("Unknown error, report bug"));
         Weapontroll.LOGGER.warn("Editor cmd failed: " + err.getMessage());
@@ -97,7 +100,7 @@ public class EditorCmd {
     AtomicReference<Type> argType = new AtomicReference<>();
     EditorUtil.traverseArrayRef((v, i) -> {
       Functions.Def funcDef = Functions.FUNCTIONS.get((String) v[0]);
-      argType.set(funcDef.getArgTypes().get(i));
+      argType.set(funcDef.getArgTypes().get(i - 1));
     }, code, selectPath);
     // display editor
     context.getSource().sendMessage(displayEditor(code.get(), selectPath, argType.get()));
@@ -269,9 +272,9 @@ public class EditorCmd {
     AtomicBoolean first = new AtomicBoolean(true);
     Functions.FUNCTIONS.values().stream().filter(v -> v.metadata().returns().equals(returnType)).forEach(v -> {
       if(!first.get()) {
-        buf.add(formatFuncDecl(selected, v));
+        buf.add(Text.of("    "));
       }
-      buf.add(Text.of("    "));
+      buf.add(formatFuncDecl(selected, v));
       first.set(false);
     });
     return ret;

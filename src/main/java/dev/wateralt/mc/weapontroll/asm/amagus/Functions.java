@@ -1,5 +1,6 @@
 package dev.wateralt.mc.weapontroll.asm.amagus;
 
+import dev.wateralt.mc.weapontroll.Weapontroll;
 import dev.wateralt.mc.weapontroll.spell.ExecContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -21,7 +22,7 @@ public class Functions {
       if(method.getParameters()[1].isVarArgs()) {
         return new Object[] { name };
       } else {
-        Object[] obj = new Object[getArgTypes().size()];
+        Object[] obj = new Object[getArgTypes().size() + 1];
         obj[0] = name;
         return obj;
       }
@@ -50,7 +51,7 @@ public class Functions {
     });
   }
   
-  @AmagusFunc(format = "lightning at %p", returns = Type.EFFECT)
+  @AmagusFunc(format = "lightning at %e", returns = Type.EFFECT)
   public static void lightningEntity(AmagusProgramState state, List<Entity> entities) {
     lightningPos(state, AmagusUtil.entityToPos(entities));
   }
@@ -65,5 +66,6 @@ public class Functions {
       if(v.getAnnotation(AmagusFunc.class) != null)
         FUNCTIONS.put(v.getName(), new Def(v.getName(), v.getAnnotation(AmagusFunc.class), v));
     });
+    Weapontroll.LOGGER.info(FUNCTIONS.toString());
   }
 }
