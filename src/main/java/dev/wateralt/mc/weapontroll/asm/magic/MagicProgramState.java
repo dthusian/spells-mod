@@ -6,7 +6,7 @@ import dev.wateralt.mc.weapontroll.asm.ExecContext;
 
 import java.util.function.Function;
 
-import static dev.wateralt.mc.weapontroll.asm.magic.Instructions.INSTRUCTIONS;
+import static dev.wateralt.mc.weapontroll.asm.magic.Instructions.INSTRS;
 
 public class MagicProgramState implements Program.State {
   private MagicProgram program;
@@ -32,7 +32,7 @@ public class MagicProgramState implements Program.State {
   public int run() {
     String[] instrs = program.getInstructions();
     for(; pc < instrs.length; pc++) {
-      Function<MagicProgramState, InstructionStatus> func = INSTRUCTIONS.get(instrs[pc]);
+      Function<MagicProgramState, InstructionStatus> func = INSTRS.get(instrs[pc]);
       if(func == null) {
         throw new AsmError("\"%s\" isn't an incantation".formatted(instrs[pc]));
       }

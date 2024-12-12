@@ -1,7 +1,6 @@
 package dev.wateralt.mc.weapontroll.asm.magic;
 
 import dev.wateralt.mc.weapontroll.Util;
-import dev.wateralt.mc.weapontroll.Weapontroll;
 import dev.wateralt.mc.weapontroll.asm.ExecContext;
 import static dev.wateralt.mc.weapontroll.asm.magic.InstructionStatus.DEFAULT;
 
@@ -9,11 +8,12 @@ import dev.wateralt.mc.weapontroll.projectile.Projectile;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.BlockStateRaycastContext;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
@@ -71,6 +71,49 @@ public class Instructions {
     return DEFAULT;
   }
   
+  public static InstructionStatus pull(MagicProgramState state) {
+    ExecContext ctx = state.ctx();
+    if(ctx.target() != null) {
+      ctx.useEnergy(EnergyCosts.PULL);
+      ctx.target().addVelocity(ctx.user().getEyePos().subtract(ctx.target().getPos()).multiply(0.05));
+    }
+    return DEFAULT;
+  }
+
+  public static InstructionStatus push(MagicProgramState state) {
+    ExecContext ctx = state.ctx();
+    if(ctx.target() != null) {
+      ctx.useEnergy(EnergyCosts.PUSH);
+      ctx.target().addVelocity(ctx.direction().normalize().multiply(1));
+    }
+    return DEFAULT;
+  }
+  
+  public static InstructionStatus lift(MagicProgramState state) {
+    ExecContext ctx = state.ctx();
+    if(ctx.target() != null) {
+      ctx.useEnergy(EnergyCosts.LIFT);
+      ctx.target().addVelocity(new Vec3d(0, 0.5, 0));
+    }
+    return DEFAULT;
+  }
+  
+  public static InstructionStatus lightning(MagicProgramState state) {
+    ExecContext ctx = state.ctx();
+    LightningEntity entity = new LightningEntity(EntityType.LIGHTNING_BOLT, ctx.world());
+    entity.setPosition(ctx.targetPos());
+    ctx.world().spawnEntity(entity);
+    return DEFAULT;
+  }
+  
+  public static InstructionStatus milk(MagicProgramState state) {
+    ExecContext ctx = state.ctx();
+    if(ctx.target() != null) {
+      ctx.target().clearStatusEffects();
+    }
+    return DEFAULT;
+  }
+  
   public static InstructionStatus projectile(MagicProgramState state) {
     ExecContext ctx = state.ctx();
     String[] instructions = state.program().getInstructions();
@@ -79,16 +122,21 @@ public class Instructions {
     return InstructionStatus.HALT;
   }
   
-  public static final HashMap<String, Function<MagicProgramState, InstructionStatus>> INSTRUCTIONS = new HashMap<>();
+  public static final HashMap<String, Function<MagicProgramState, InstructionStatus>> INSTRS = new HashMap<>();
   
   static {
-    INSTRUCTIONS.put("self", Instructions::self);
+    INSTRS.put("self", Instructions::self);
     
-    INSTRUCTIONS.put("fire", Instructions::fire);
-    INSTRUCTIONS.put("heal", Instructions::heal);
-    INSTRUCTIONS.put("mine", Instructions::mine);
-    INSTRUCTIONS.put("explode", Instructions::explode);
+    INSTRS.put("fire", Instructions::fire);
+    INSTRS.put("heal", Instructions::heal);
+    INSTRS.put("mine", Instructions::mine);
+    INSTRS.put("explode", Instructions::explode);
+    INSTRS.put("pull", Instructions::pull);
+    INSTRS.put("push", Instructions::push);
+    INSTRS.put("lift", Instructions::lift);
+    INSTRS.put("lightning", Instructions::lightning);
+    INSTRS.put("milk", Instructions::milk);
     
-    INSTRUCTIONS.put("projectile", Instructions::projectile);
+    INSTRS.put("projectile", Instructions::projectile);
   }
 }
