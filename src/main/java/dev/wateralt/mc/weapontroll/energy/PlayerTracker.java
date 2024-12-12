@@ -1,7 +1,6 @@
 package dev.wateralt.mc.weapontroll.energy;
 
 import dev.wateralt.mc.weapontroll.Weapontroll;
-import dev.wateralt.mc.weapontroll.asm.std20.EnergyCosts;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
@@ -26,7 +25,7 @@ public class PlayerTracker {
       .filter(v -> !players.containsKey(v.getUuid()))
       .forEach(this::track);
     this.players.forEach((k, v) -> {
-      v.updateAndShowEnergyBar();
+      v.periodic();
     });
   }
 }

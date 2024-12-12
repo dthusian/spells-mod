@@ -1,6 +1,7 @@
 package dev.wateralt.mc.weapontroll.projectile;
 
 import dev.wateralt.mc.weapontroll.Util;
+import dev.wateralt.mc.weapontroll.Weapontroll;
 import dev.wateralt.mc.weapontroll.asm.ExecContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -43,7 +44,8 @@ public class Projectile {
     String srcO = src.get();
     if(srcO.isEmpty()) return;
     if(ent.getWorld() instanceof ServerWorld sw && ent.getOwner() instanceof LivingEntity owner) {
-      Util.executeString(List.of(srcO), new ExecContext(sw, owner, target, ent.getPos(), ent.getVelocity()));
+      Vec3d vel = ent.getVelocity().normalize();
+      Util.executeString(List.of(srcO), new ExecContext(sw, owner, target, ent.getPos(), vel));
     }
   }
 }

@@ -18,13 +18,9 @@ public abstract class ServerPlayerEntityMixin {
     ServerPlayerEntity that = (ServerPlayerEntity) (Object) this;
     if(that.isSneaking()) {
       ItemStack stack1 = that.getMainHandStack();
-      ItemStack stack2 = that.getOffHandStack();
-      ExecContext ctx = new ExecContext(that.getServerWorld(), that, that, that.getPos(), that.getRotationVector());
+      ExecContext ctx = new ExecContext(that.getServerWorld(), that, that, that.getEyePos(), that.getRotationVector());
       if(stack1 != null && stack1.getItem().equals(Items.WRITABLE_BOOK)) {
         Util.executeBook(stack1, ctx);
-      }
-      if(stack2 != null && stack2.getItem().equals(Items.WRITABLE_BOOK)) {
-        Util.executeBook(stack2, ctx);
       }
     }
   }

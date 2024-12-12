@@ -9,9 +9,21 @@ import java.util.Optional;
 
 public record Instruction(Optional<Short> returnInto, String function, List<Arg> args) {
   public sealed interface Arg {}
-  public record SlotArg(short slot) implements Arg {}
-  public record NumArg(double number) implements Arg {}
-  public record StringArg(String str) implements Arg {}
+  public record SlotArg(short slot) implements Arg {
+    public String toString() {
+      return "$%d".formatted(slot);
+    }
+  }
+  public record NumArg(double number) implements Arg {
+    public String toString() {
+      return Double.toString(number);
+    }
+  }
+  public record StringArg(String str) implements Arg {
+    public String toString() {
+      return str;
+    }
+  }
   
   private static Arg parseArg(String part) {
     if(part.isEmpty()) {
@@ -55,5 +67,13 @@ public record Instruction(Optional<Short> returnInto, String function, List<Arg>
     } catch(NumberFormatException err) {
       throw new AsmError("Invalid number: " + err.getMessage());
     }
+  }
+  
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    returnInto.map(v -> sb.append("$%d = ".formatted(v)));
+    sb.append(function);
+    args.stream().forEach(v -> sb.append(" %s".formatted(v)));
+    return sb.toString();
   }
 }

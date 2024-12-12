@@ -1,13 +1,20 @@
 package dev.wateralt.mc.weapontroll.asm.magic;
 
 import dev.wateralt.mc.weapontroll.Util;
+import dev.wateralt.mc.weapontroll.Weapontroll;
 import dev.wateralt.mc.weapontroll.asm.ExecContext;
 import static dev.wateralt.mc.weapontroll.asm.magic.InstructionStatus.DEFAULT;
 
 import dev.wateralt.mc.weapontroll.projectile.Projectile;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockStateRaycastContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -41,6 +48,21 @@ public class Instructions {
     }
     return DEFAULT;
   }
+  
+  public static InstructionStatus mine(MagicProgramState state) {
+    ExecContext ctx = state.ctx();
+    Vec3d start = ctx.targetPos();
+    Vec3d end = ctx.targetPos().add(ctx.direction().normalize().multiply(4.0));
+    BlockHitResult res = ctx.world().raycast(new RaycastContext(start, end, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, ShapeContext.absent()));
+    if(res.getType() == HitResult.Type.BLOCK) {
+      Block targetBlock = ctx.world().getBlockState(res.getBlockPos()).getBlock();
+      if(targetBlock.getHardness() < 1000) {
+        ctx.useEnergy(EnergyCosts.BREAK_BLOCK_COEFF * Math.ceil(targetBlock.getHardness()));
+        ctx.world().breakBlock(res.getBlockPos(), true, ctx.user());
+      }
+    }
+    return DEFAULT;
+  }
 
   public static InstructionStatus explode(MagicProgramState state) {
     Vec3d pos = state.ctx().targetPos();
@@ -61,9 +83,12 @@ public class Instructions {
   
   static {
     INSTRUCTIONS.put("self", Instructions::self);
+    
     INSTRUCTIONS.put("fire", Instructions::fire);
     INSTRUCTIONS.put("heal", Instructions::heal);
+    INSTRUCTIONS.put("mine", Instructions::mine);
     INSTRUCTIONS.put("explode", Instructions::explode);
+    
     INSTRUCTIONS.put("projectile", Instructions::projectile);
   }
 }

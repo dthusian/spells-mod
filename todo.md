@@ -1,12 +1,24 @@
 - std20
-  - Instruction.toString
-  - add more world interactions
-    - particles
+  - add more instructions
+    - string manip
     - status effects
     - item manip
 - magic
-  - add more world interactions
+  - add more world interactions (stolen from ars nouveau)
     - placing blocks
+    - destroying blocks
+    - milk
+    - wait
+    - push
+    - pull
+    - lift
+    - infuse effects
+    - teleport
+    - lightning
+    - fragment projectile
+  - low priority world interactions
+    - harvest (trees, crops)
+    - leap (launch in facing direction)
 - energy
   - switch energy over to scoreboard
   - add new damage type for mana depletion

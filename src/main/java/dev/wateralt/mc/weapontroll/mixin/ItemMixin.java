@@ -18,7 +18,7 @@ public abstract class ItemMixin {
   private void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfoReturnable<Boolean> cir) {
     if(stack.getItem() == Items.WRITABLE_BOOK) {
       if(attacker.getWorld() instanceof ServerWorld sw) {
-        Util.executeBook(stack, new ExecContext(sw, attacker, target, target.getPos(), attacker.getRotationVector()));
+        Util.executeBook(stack, new ExecContext(sw, attacker, target, target.getEyePos(), attacker.getRotationVector()));
       }
     }
   }
