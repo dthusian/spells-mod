@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -154,10 +155,29 @@ public class Instructions {
     ExecContext ctx = state.ctx();
     String[] instructions = state.program().getInstructions();
     String source = "#lang magic\n" + String.join("\n", Arrays.copyOfRange(instructions, state.pc() + 1, instructions.length));
-    Projectile.create(ctx.world(), ctx.user(), ctx.targetPos(), ctx.direction(), source);
+    Projectile.create(ctx.world(), ctx.user(), ctx.targetPos(), ctx.direction(), source, 0.1);
     return InstructionStatus.HALT;
   }
-  
+
+  public static InstructionStatus multiprojectile(MagicProgramState state) {
+    ExecContext ctx = state.ctx();
+    String[] instructions = state.program().getInstructions();
+    String source = "#lang magic\n" + String.join("\n", Arrays.copyOfRange(instructions, state.pc() + 1, instructions.length));
+    
+    Vec3d dir = state.ctx().direction();
+    Random rng = new Random(Double.doubleToLongBits(dir.getX()));
+    Vec3d orth1 = dir.crossProduct(dir.rotateX(0.727f)).normalize();
+    Vec3d orth2 = dir.crossProduct(orth1).normalize();
+    for(int i = 0; i < 9; i++) {
+      double xDefl = Util.normal(rng.nextDouble()) * 0.2;
+      double yDefl = Util.normal(rng.nextDouble()) * 0.2;
+      Vec3d v = dir.add(orth1.multiply(xDefl)).add(orth2.multiply(yDefl)).normalize();
+      Projectile.create(ctx.world(), ctx.user(), ctx.targetPos(), v, source, 0.1);
+    }
+    return InstructionStatus.HALT;
+  }
+
+
   public static InstructionStatus wait(MagicProgramState state) {
     return new InstructionStatus(10, false);
   }
@@ -181,6 +201,7 @@ public class Instructions {
     INSTRS.put("teleswap", Instructions::teleswap);
     
     INSTRS.put("projectile", Instructions::projectile);
+    INSTRS.put("multiprojectile", Instructions::multiprojectile);
     INSTRS.put("wait", Instructions::wait);
   }
 }

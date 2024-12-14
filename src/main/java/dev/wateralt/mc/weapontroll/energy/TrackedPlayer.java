@@ -1,5 +1,7 @@
 package dev.wateralt.mc.weapontroll.energy;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.boss.CommandBossBar;
@@ -31,20 +33,25 @@ public class TrackedPlayer {
     return server.getPlayerManager().getPlayer(this.uuid);
   }
   
+  private static boolean shouldDisplayEnergy(ItemStack handItem) {
+    if(handItem == null) return false;
+    if(handItem.getItem().equals(Items.WRITABLE_BOOK)) return true;
+
+    NbtComponent comp = handItem.get(DataComponentTypes.CUSTOM_DATA);
+    if(comp != null && comp.contains("weapontroll_mana")) {
+      return true;
+    }
+    
+    return false;
+  }
+  
   public void periodic() {
     ServerPlayerEntity spl = this.server.getPlayerManager().getPlayer(this.uuid);
     
     if(spl != null && !spl.isDisconnected()) {
       ItemStack mainHand = spl.getMainHandStack();
       ItemStack offHand = spl.getOffHandStack();
-      boolean shouldDisplayEnergy = false;
-      if(mainHand != null && mainHand.getItem().equals(Items.WRITABLE_BOOK)) {
-        shouldDisplayEnergy = true;
-      }
-      if(offHand != null && offHand.getItem().equals(Items.WRITABLE_BOOK)) {
-        shouldDisplayEnergy = true;
-      }
-      if(shouldDisplayEnergy) {
+      if(shouldDisplayEnergy(mainHand) || shouldDisplayEnergy(offHand)) {
         displayEnergyBarTicks = 100;
       }
     }

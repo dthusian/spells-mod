@@ -36,7 +36,8 @@ public class EnergyUtil {
   }
   
   public static void addEnergy(ServerPlayerEntity spl, int amount) {
-    setEnergy(spl, Math.max(getEnergy(spl) + amount, computeMaxEnergy(spl)));
+    int oldEnergy = getEnergy(spl);
+    setEnergy(spl, Math.min(oldEnergy + amount, Math.max(computeMaxEnergy(spl), oldEnergy)));
   }
   
   public static void addEnergyIgnoringLimit(ServerPlayerEntity spl, int amount) {

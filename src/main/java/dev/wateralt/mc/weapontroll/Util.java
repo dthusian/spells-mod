@@ -8,9 +8,14 @@ import dev.wateralt.mc.weapontroll.asm.ExecContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -48,4 +53,10 @@ public class Util {
   public static BlockPos vecToPos(Vec3d vec) {
     return new BlockPos((int)Math.floor(vec.getX()), (int)Math.floor(vec.getY()), (int)Math.floor(vec.getZ()));
   }
+  
+  public static double normal(double x) {
+    return Math.sqrt(2) * Math.tan(2 * x - 1);
+  }
+  
+  public static RegistryEntry<Potion> MANA_POTION = null;
 }
