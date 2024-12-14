@@ -7,7 +7,6 @@
 - magic
   - add more instructions (stolen from ars nouveau)
     - wait
-    - infuse effects
     - teleport
     - fragment projectile
   - low priority instructions

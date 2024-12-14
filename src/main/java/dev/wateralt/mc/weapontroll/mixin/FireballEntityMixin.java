@@ -1,6 +1,6 @@
 package dev.wateralt.mc.weapontroll.mixin;
 
-import dev.wateralt.mc.weapontroll.projectile.Projectile;
+import dev.wateralt.mc.weapontroll.asm.phys.Projectile;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.Items;

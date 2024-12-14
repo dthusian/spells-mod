@@ -1,5 +1,6 @@
 package dev.wateralt.mc.weapontroll;
 
+import dev.wateralt.mc.weapontroll.asm.ProgramTracker;
 import dev.wateralt.mc.weapontroll.energy.PlayerTracker;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.server.MinecraftServer;
@@ -10,6 +11,7 @@ public class Weapontroll implements ModInitializer {
   public static final Logger LOGGER = LoggerFactory.getLogger(Weapontroll.class);
   public static final PlayerTracker PLAYER_TRACKER = new PlayerTracker();
   public static MinecraftServer SERVER;
+  public static ProgramTracker PROGRAM_TRACKER = new ProgramTracker();
   @Override
   public void onInitialize() {}
 }

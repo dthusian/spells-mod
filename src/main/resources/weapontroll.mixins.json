@@ -7,9 +7,9 @@
     "EntityMixin",
     "FireballEntityMixin",
     "ItemMixin",
+    "MinecraftServerMixin",
     "ServerPlayerEntityAccessor",
-    "ServerPlayerEntityMixin",
-    "ServerWorldMixin"
+    "ServerPlayerEntityMixin"
   ],
   "client": [
   ],

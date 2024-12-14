@@ -4,12 +4,15 @@ import dev.wateralt.mc.weapontroll.Util;
 import dev.wateralt.mc.weapontroll.asm.ExecContext;
 import static dev.wateralt.mc.weapontroll.asm.magic.InstructionStatus.DEFAULT;
 
-import dev.wateralt.mc.weapontroll.projectile.Projectile;
+import dev.wateralt.mc.weapontroll.asm.phys.InfuseUtil;
+import dev.wateralt.mc.weapontroll.asm.phys.Projectile;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -19,6 +22,7 @@ import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.function.Function;
 
 public class Instructions {
@@ -114,12 +118,48 @@ public class Instructions {
     return DEFAULT;
   }
   
+  public static InstructionStatus teleport(MagicProgramState state) {
+    ExecContext ctx = state.ctx();
+    ctx.useEnergy(EnergyCosts.TELEPORT);
+    ctx.user().teleport(ctx.world(), ctx.targetPos().getX(), ctx.targetPos().getY(), ctx.targetPos().getZ(), Set.of(), 0.0f, 0.0f, false);
+    return DEFAULT;
+  }
+  
+  public static InstructionStatus teleswap(MagicProgramState state) {
+    ExecContext ctx = state.ctx();
+    if(ctx.target() != null) {
+      ctx.useEnergy(EnergyCosts.TELESWAP);
+      double x1 = ctx.user().getX();
+      double y1 = ctx.user().getY();
+      double z1 = ctx.user().getZ();
+      double x2 = ctx.target().getX();
+      double y2 = ctx.target().getY();
+      double z2 = ctx.target().getZ();
+      ctx.target().teleport(ctx.world(), x1, y1, z1, Set.of(), 0.0f, 0.0f, false);
+      ctx.user().teleport(ctx.world(), x2, y2, z2, Set.of(), 0.0f, 0.0f, false);
+    }
+    return DEFAULT;
+  }
+
+  public static InstructionStatus infuse(MagicProgramState state) {
+    ExecContext ctx = state.ctx();
+    if(ctx.user() instanceof ServerPlayerEntity spe) {
+      state.ctx().useEnergy(EnergyCosts.INFUSE);
+      InfuseUtil.infuseFirst(ctx.world(), spe.getInventory(), ctx.targetPos(), ctx.direction(), ctx.user().isInCreativeMode());
+    }
+    return DEFAULT;
+  }
+
   public static InstructionStatus projectile(MagicProgramState state) {
     ExecContext ctx = state.ctx();
     String[] instructions = state.program().getInstructions();
     String source = "#lang magic\n" + String.join("\n", Arrays.copyOfRange(instructions, state.pc() + 1, instructions.length));
     Projectile.create(ctx.world(), ctx.user(), ctx.targetPos(), ctx.direction(), source);
     return InstructionStatus.HALT;
+  }
+  
+  public static InstructionStatus wait(MagicProgramState state) {
+    return new InstructionStatus(10, false);
   }
   
   public static final HashMap<String, Function<MagicProgramState, InstructionStatus>> INSTRS = new HashMap<>();
@@ -136,7 +176,11 @@ public class Instructions {
     INSTRS.put("lift", Instructions::lift);
     INSTRS.put("lightning", Instructions::lightning);
     INSTRS.put("milk", Instructions::milk);
+    INSTRS.put("infuse", Instructions::infuse);
+    INSTRS.put("teleport", Instructions::teleport);
+    INSTRS.put("teleswap", Instructions::teleswap);
     
     INSTRS.put("projectile", Instructions::projectile);
+    INSTRS.put("wait", Instructions::wait);
   }
 }

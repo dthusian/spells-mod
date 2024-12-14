@@ -8,4 +8,7 @@ public class EnergyCosts {
   public static final int PUSH = 50;
   public static final int LIFT = 50;
   public static final int BREAK_BLOCK_COEFF = 5;
+  public static final int INFUSE = 50;
+  public static final int TELEPORT = 100;
+  public static final int TELESWAP = 20;
 }

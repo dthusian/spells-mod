@@ -1,4 +1,4 @@
-package dev.wateralt.mc.weapontroll.projectile;
+package dev.wateralt.mc.weapontroll.asm.phys;
 
 import dev.wateralt.mc.weapontroll.Util;
 import dev.wateralt.mc.weapontroll.Weapontroll;
