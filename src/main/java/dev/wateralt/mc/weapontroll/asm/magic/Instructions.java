@@ -105,6 +105,7 @@ public class Instructions {
   
   public static InstructionStatus lightning(MagicProgramState state) {
     ExecContext ctx = state.ctx();
+    ctx.useEnergy(EnergyCosts.LIGHTNING);
     LightningEntity entity = new LightningEntity(EntityType.LIGHTNING_BOLT, ctx.world());
     entity.setPosition(ctx.targetPos());
     ctx.world().spawnEntity(entity);
@@ -113,6 +114,7 @@ public class Instructions {
   
   public static InstructionStatus milk(MagicProgramState state) {
     ExecContext ctx = state.ctx();
+    ctx.useEnergy(EnergyCosts.MILK);
     if(ctx.target() != null) {
       ctx.target().clearStatusEffects();
     }
