@@ -25,14 +25,14 @@ public class Util {
   public static void executeString(List<String> src, ExecContext ctx) {
     if(!ctx.user().isAlive()) return;
     try {
-      if(src.size() == 0) {
+      if(src.isEmpty()) {
         return;
       }
       Language lang = Languages.identify(src.get(0));
       if(lang != null) {
         Program prog = lang.compile(src);
         Program.State state = prog.prepareRun(ctx);
-        state.run();
+        Weapontroll.PROGRAM_TRACKER.run(state);;
       }
     } catch(AsmError err) {
       if(ctx.user() instanceof ServerPlayerEntity spe) {
@@ -61,6 +61,4 @@ public class Util {
   public static double normal(double x) {
     return Math.sqrt(2) * Math.tan(2 * x - 1);
   }
-  
-  public static RegistryEntry<Potion> MANA_POTION = null;
 }

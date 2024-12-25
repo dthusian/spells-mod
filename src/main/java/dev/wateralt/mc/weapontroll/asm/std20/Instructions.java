@@ -33,6 +33,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Instructions {
 
@@ -191,6 +192,14 @@ public class Instructions {
     ent.damage(ctx.world(), ctx.world().getDamageSources().magic(), (float)dmg);
   }
   public static void mountent(Std20ProgramState state, Entity bottom, Entity top) {
+    if(bottom == top) return;
+    AtomicBoolean stop = new AtomicBoolean(false);
+    top.getPassengersDeep().iterator().forEachRemaining(v -> {
+      if(v == bottom) {
+        stop.set(true);
+      }
+    });
+    if(stop.get()) return;
     top.startRiding(bottom, true);
     if(bottom instanceof ServerPlayerEntity spe) {
       ServerPlayNetworkHandler handler = ((ServerPlayerEntityAccessor) spe).getNetworkHandler();
@@ -281,7 +290,7 @@ public class Instructions {
     ctx.world().spawnEntity(summonedEntity);
     return summonedEntity;
   }
-  public static void wait(Std20ProgramState state, Vec3d pos, String entity) {
-    
+  public static void wait(Std20ProgramState state, double ticks) {
+    state.setWait((int)ticks);
   }
 }

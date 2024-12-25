@@ -28,7 +28,7 @@ public record Instruction(Optional<Short> returnInto, String function, List<Arg>
   private static Arg parseArg(String part) {
     if(part.isEmpty()) {
       throw new RuntimeException("Unreachable?");
-    } else if(Character.isDigit(part.charAt(0))) {
+    } else if(Character.isDigit(part.charAt(0)) || part.charAt(0) == '-') {
       return new NumArg(Double.parseDouble(part));
     } else if(part.startsWith("$")) {
       return new SlotArg(Short.parseShort(part.substring(1)));

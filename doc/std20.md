@@ -116,3 +116,7 @@ The syntax `<T> = ` before an instruction indicates the instruction returns `T`.
     - `arrow`: Costs 50 energy
     - `fireball`: Costs 30 energy
     - `snowball`: Costs 20 energy
+
+### Control Flow Instructions
+
+- `wait <ticks: number>` Waits for the specified number of ticks before continuing execution.

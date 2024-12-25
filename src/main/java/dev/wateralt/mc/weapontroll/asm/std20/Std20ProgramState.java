@@ -19,6 +19,7 @@ public class Std20ProgramState implements Program.State {
   int instructionsLeft;
   int pc;
   Object[] slots;
+  Optional<Integer> wait;
 
   public Std20ProgramState(Std20Program program, ExecContext ctx, int maxSlots, int instructionLimit) {
     this.program = program;
@@ -83,6 +84,7 @@ public class Std20ProgramState implements Program.State {
 
   @Override
   public int run() {
+    wait = Optional.empty();
     while(instructionsLeft > 0) {
       if(pc >= program.getInstrs().size()) {
         instructionsLeft = 0;
@@ -133,6 +135,10 @@ public class Std20ProgramState implements Program.State {
 
         pc++;
         instructionsLeft--;
+        
+        if(wait.isPresent()) {
+          return wait.get();
+        }
       } catch(AsmError err) {
         throw new AsmError("at pc %d (`%s`): %s".formatted(pc, instr.toString(), err.getMessage()));
       }
@@ -143,5 +149,9 @@ public class Std20ProgramState implements Program.State {
   @Override
   public boolean isFinished() {
     return this.instructionsLeft == 0;
+  }
+  
+  public void setWait(int x) {
+    this.wait = Optional.of(x);
   }
 }
