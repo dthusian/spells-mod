@@ -200,6 +200,7 @@ public class Instructions {
       }
     });
     if(stop.get()) return;
+    state.getContext().useEnergy(EnergyCosts.MOUNT_DIST_COST_FACTOR * bottom.getPos().distanceTo(top.getPos()));
     top.startRiding(bottom, true);
     if(bottom instanceof ServerPlayerEntity spe) {
       ServerPlayNetworkHandler handler = ((ServerPlayerEntityAccessor) spe).getNetworkHandler();

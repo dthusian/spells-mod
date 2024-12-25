@@ -11,6 +11,7 @@ public class EnergyCosts {
   public static final double PLACE_COST_FACTOR = 3;
   public static final double DESTROY_COST_FACTOR = 3;
   public static final double LIGHTNING_COST = 100;
+  public static final double MOUNT_DIST_COST_FACTOR = 1;
   
   // Cost for each entity
   public static final HashMap<String, Integer> SUMMON_ENTITY_COSTS = new HashMap<>();

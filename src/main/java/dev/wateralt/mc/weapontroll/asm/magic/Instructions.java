@@ -161,6 +161,7 @@ public class Instructions {
 
   public static InstructionStatus projectile(MagicProgramState state) {
     ExecContext ctx = state.ctx();
+    ctx.useEnergy(EnergyCosts.PROJECTILE);
     String[] instructions = state.program().getInstructions();
     String source = "#lang magic\n" + String.join("\n", Arrays.copyOfRange(instructions, state.pc() + 1, instructions.length));
     Projectile.create(ctx.world(), ctx.user(), ctx.targetPos(), ctx.direction(), source, 0.1);
@@ -169,6 +170,7 @@ public class Instructions {
 
   public static InstructionStatus multiprojectile(MagicProgramState state) {
     ExecContext ctx = state.ctx();
+    ctx.useEnergy(EnergyCosts.PROJECTILE * 10);
     String[] instructions = state.program().getInstructions();
     String source = "#lang magic\n" + String.join("\n", Arrays.copyOfRange(instructions, state.pc() + 1, instructions.length));
     

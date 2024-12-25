@@ -25,18 +25,19 @@ public class EnergyUtil {
       newEnergy = 0;
       double damage = deficit * EnergyCosts.HP_PER_ENERGY_DEPLETED;
       if(!spl.isCreative() && spl.isAlive()) {
-        if(damage >= spl.getHealth()) {
-          spl.damage(spl.getServerWorld(), spl.getServerWorld().getDamageSources().magic(), 999.0f);
-          stop = true;
-        } else {
+        if(damage + 2 >= spl.getHealth()) {
           spl.damage(
             spl.getServerWorld(),
             spl.getRegistryManager()
               .getOptional(RegistryKeys.DAMAGE_TYPE)
               .flatMap(v -> v.getEntry(Identifier.of("weapontroll", "mana_depletion")))
               .map(DamageSource::new)
-              .orElseGet(() -> spl.getDamageSources().magic()), 
-            (float) damage);
+              .orElseGet(() -> spl.getDamageSources().magic()),
+            999.0f);
+          stop = true;
+        } else {
+          spl.setHealth((float) (spl.getHealth() - damage));
+          spl.markHealthDirty();
         }
       }
     }

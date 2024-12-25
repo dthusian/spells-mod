@@ -43,7 +43,7 @@ The syntax `<T> = ` before an instruction indicates the instruction returns `T`.
 ### General Instructions
 
 - `<number> = isnull <x: any>` Returns 1 if `x` is null, 0 otherwise.
-- `<any> = copy <x: any>` Copies `x`.
+- `<any> = mov <x: any>` Copies `x`.
 
 ### Scalar Instructions
 

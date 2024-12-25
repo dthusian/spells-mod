@@ -13,5 +13,6 @@ public class EnergyCosts {
   public static final int INFUSE = 50;
   public static final int TELEPORT = 100;
   public static final int TELESWAP = 20;
+  public static final int PROJECTILE = 2;
   
 }
