@@ -33,7 +33,7 @@ public class EnergyUtil {
               .flatMap(v -> v.getEntry(Identifier.of("weapontroll", "mana_depletion")))
               .map(DamageSource::new)
               .orElseGet(() -> spl.getDamageSources().magic()),
-            999.0f);
+            50.0f);
           stop = true;
         } else {
           spl.setHealth((float) (spl.getHealth() - damage));
