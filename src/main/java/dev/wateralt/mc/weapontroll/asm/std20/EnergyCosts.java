@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class EnergyCosts {
   // Instruction energy costs
-  public static final double ACCEL_COST_FACTOR = 30;
+  public static final double ACCEL_COST_FACTOR = 40;
   public static final double DAMAGE_COST_POWER = 2;
   public static final double EXPLODE_COST_FACTOR = 10;
   public static final double EXPLODE_COST_BASE = 2;
@@ -27,10 +27,7 @@ public class EnergyCosts {
   }
   
   // Energy depletion hp cost
-  public static double HP_PER_ENERGY_DEPLETED = 0.04;
-  
-  // Natural energy regen
-  public static int ENERGY_REGEN = 10;
+  public static double HP_PER_ENERGY_DEPLETED = 0.2;
   
   // Threshold for "far" interactions that cost extra
   public static int LOCAL_RADIUS = 8;

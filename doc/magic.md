@@ -1,5 +1,8 @@
 # Magic Language Reference
 
+All books must begin with `#lang magic` on one line.
+Each line after contains one incantation each.
+
 ## Targeting
 
 - `self` - Targets the caster

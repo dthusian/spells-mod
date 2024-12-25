@@ -81,6 +81,8 @@ public class Instructions {
     if(ctx.target() != null) {
       ctx.useEnergy(EnergyCosts.PULL);
       ctx.target().addVelocity(ctx.user().getEyePos().subtract(ctx.target().getPos()).multiply(0.05));
+      ctx.target().velocityModified = true;
+      ctx.target().velocityDirty = true;
     }
     return DEFAULT;
   }
@@ -90,6 +92,8 @@ public class Instructions {
     if(ctx.target() != null) {
       ctx.useEnergy(EnergyCosts.PUSH);
       ctx.target().addVelocity(ctx.direction().normalize().multiply(1));
+      ctx.target().velocityModified = true;
+      ctx.target().velocityDirty = true;
     }
     return DEFAULT;
   }
@@ -99,6 +103,8 @@ public class Instructions {
     if(ctx.target() != null) {
       ctx.useEnergy(EnergyCosts.LIFT);
       ctx.target().addVelocity(new Vec3d(0, 0.5, 0));
+      ctx.target().velocityModified = true;
+      ctx.target().velocityDirty = true;
     }
     return DEFAULT;
   }

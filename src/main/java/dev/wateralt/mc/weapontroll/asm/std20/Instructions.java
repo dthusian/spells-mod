@@ -281,4 +281,7 @@ public class Instructions {
     ctx.world().spawnEntity(summonedEntity);
     return summonedEntity;
   }
+  public static void wait(Std20ProgramState state, Vec3d pos, String entity) {
+    
+  }
 }
