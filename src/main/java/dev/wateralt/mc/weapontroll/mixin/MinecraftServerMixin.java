@@ -38,10 +38,14 @@ public abstract class MinecraftServerMixin {
   
   @Inject(method = "tick", at = @At("HEAD"))
   private void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
-    MinecraftServer that = (MinecraftServer) (Object) this;
-    if(that.getTicks() % PlayerTracker.TRACK_INTERVAL == 0) {
-      Weapontroll.PLAYER_TRACKER.periodic();
+    try {
+      MinecraftServer that = (MinecraftServer) (Object) this;
+      if(that.getTicks() % PlayerTracker.TRACK_INTERVAL == 0) {
+        Weapontroll.PLAYER_TRACKER.periodic();
+      }
+      Weapontroll.PROGRAM_TRACKER.tick();
+    } catch(Exception err) {
+      err.printStackTrace();
     }
-    Weapontroll.PROGRAM_TRACKER.tick();
   }
 }
