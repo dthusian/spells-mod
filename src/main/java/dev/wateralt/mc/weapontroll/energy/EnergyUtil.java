@@ -2,6 +2,10 @@ package dev.wateralt.mc.weapontroll.energy;
 
 import dev.wateralt.mc.weapontroll.asm.AsmError;
 import dev.wateralt.mc.weapontroll.asm.std20.EnergyCosts;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.scoreboard.ReadableScoreboardScore;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -10,6 +14,7 @@ import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 public class EnergyUtil {
   public static void useEnergy(ServerPlayerEntity spl, double amount) {
@@ -19,13 +24,19 @@ public class EnergyUtil {
       int deficit = -newEnergy;
       newEnergy = 0;
       double damage = deficit * EnergyCosts.HP_PER_ENERGY_DEPLETED;
-      if(!spl.isCreative()) {
-        if(damage > spl.getHealth()) {
-          spl.kill(spl.getServerWorld());
+      if(!spl.isCreative() && spl.isAlive()) {
+        if(damage >= spl.getHealth()) {
+          spl.damage(spl.getServerWorld(), spl.getServerWorld().getDamageSources().magic(), 999.0f);
           stop = true;
         } else {
-          spl.setHealth((float) (spl.getHealth() - damage));
-          spl.markHealthDirty();
+          spl.damage(
+            spl.getServerWorld(),
+            spl.getRegistryManager()
+              .getOptional(RegistryKeys.DAMAGE_TYPE)
+              .flatMap(v -> v.getEntry(Identifier.of("weapontroll", "mana_depletion")))
+              .map(DamageSource::new)
+              .orElseGet(() -> spl.getDamageSources().magic()), 
+            (float) damage);
         }
       }
     }

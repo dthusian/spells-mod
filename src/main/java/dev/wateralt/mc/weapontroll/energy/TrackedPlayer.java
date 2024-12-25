@@ -18,14 +18,11 @@ import java.util.UUID;
 public class TrackedPlayer {
   private final MinecraftServer server;
   private final UUID uuid;
-  @Nullable
-  private CommandBossBar energyBar;
   private int displayEnergyBarTicks;
   
   public TrackedPlayer(MinecraftServer server, UUID uuid) {
     this.server = server;
     this.uuid = uuid;
-    this.energyBar = null;
     this.displayEnergyBarTicks = 0;
   }
   
@@ -45,6 +42,32 @@ public class TrackedPlayer {
     return false;
   }
   
+  private CommandBossBar getOrCreateBar(ServerPlayerEntity spl, Text energyStr, int energy, int maxEnergy) {
+    BossBarManager bbm = server.getBossBarManager();
+    Identifier id = Identifier.of("weapontroll:weapontroll_energybar." + uuid.toString());
+    CommandBossBar bar = bbm.get(id);
+    if(bar == null) {
+      bar = bbm.add(id, energyStr);
+      bar.setColor(BossBar.Color.BLUE);
+      bar.addPlayer(spl);
+    }
+    bar.setMaxValue(maxEnergy);
+    bar.setValue(energy);
+    bar.setName(energyStr);
+    bar.setVisible(true);
+    return bar;
+  }
+  
+  private void hideBarIfExist(ServerPlayerEntity spl) {
+    BossBarManager bbm = server.getBossBarManager();
+    Identifier id = Identifier.of("weapontroll:weapontroll_energybar." + uuid.toString());
+    CommandBossBar bar = bbm.get(id);
+    if(bar != null) {
+      bar.removePlayer(spl);
+      bbm.remove(bar);
+    }
+  }
+  
   public void periodic() {
     ServerPlayerEntity spl = this.server.getPlayerManager().getPlayer(this.uuid);
     
@@ -60,19 +83,9 @@ public class TrackedPlayer {
       int energy = EnergyUtil.getEnergy(spl);
       int maxEnergy = EnergyUtil.computeMaxEnergy(spl);
       Text energyStr = Text.of(formatEnergy(energy, maxEnergy));
-      if(energyBar == null) {
-        BossBarManager bbm = server.getBossBarManager();
-        CommandBossBar bar = bbm.add(Identifier.of("weapontroll:weapontroll_energybar." + uuid.toString()), energyStr);
-        bar.setColor(BossBar.Color.BLUE);
-        bar.addPlayer(spl);
-        this.energyBar = bar;
-      }
-      energyBar.setMaxValue(maxEnergy);
-      energyBar.setValue(energy);
-      energyBar.setName(energyStr);
-      energyBar.setVisible(true);
-    } else if(energyBar != null) {
-      energyBar.setVisible(false);
+      getOrCreateBar(spl, energyStr, energy, maxEnergy);
+    } else {
+      hideBarIfExist(spl);
     }
     
     if(displayEnergyBarTicks > 0) {

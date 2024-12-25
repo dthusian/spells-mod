@@ -23,7 +23,11 @@ import java.util.List;
 
 public class Util {
   public static void executeString(List<String> src, ExecContext ctx) {
+    if(!ctx.user().isAlive()) return;
     try {
+      if(src.size() == 0) {
+        return;
+      }
       Language lang = Languages.identify(src.get(0));
       if(lang != null) {
         Program prog = lang.compile(src);

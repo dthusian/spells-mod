@@ -89,6 +89,7 @@ The syntax `<T> = ` before an instruction indicates the instruction returns `T`.
 - `<vector> = entpos <ent: entity>` Gets the position of the entity, in blocks.
 - `<vector> = entvel <ent: entity>` Gets the velocity of the entity, in blocks per tick.
 - `<vector> = entfacing <ent: entity>` Gets the direction the entity is facing.
+- `<number> = checkblock <pos: vector> <block: string>` Returns 1 if the block at that position matches the block given, 0 otherwise
 
 ### World Manipulation Instructions
 
