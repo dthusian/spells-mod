@@ -84,7 +84,7 @@ public class TrackedPlayer {
       int maxEnergy = EnergyUtil.computeMaxEnergy(spl);
       Text energyStr = Text.of(formatEnergy(energy, maxEnergy));
       getOrCreateBar(spl, energyStr, energy, maxEnergy);
-    } else {
+    } else if(spl != null) {
       hideBarIfExist(spl);
     }
     
