@@ -14,7 +14,11 @@ public class ProgramTracker {
   }
   
   public void schedule(Program.State state, int tickDelay) {
-    programs.getOrDefault(tick + tickDelay, new ArrayList<>()).add(state);
+    long future = tick + tickDelay;
+    if(!programs.containsKey(future)) {
+      programs.put(tick + tickDelay, new ArrayList<>());
+    }
+    programs.get(tick + tickDelay).add(state);
   }
   
   public void run(Program.State state) {

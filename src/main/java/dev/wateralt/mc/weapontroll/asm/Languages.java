@@ -12,7 +12,7 @@ public class Languages {
     if(linePos == -1) linePos = src.length();
     String firstLine = src.substring(0, linePos).trim();
     if(firstLine.equals("#lang lazy")) {
-      throw new AsmError("The runtime was too lazy to your program");
+      throw new AsmError("The runtime was too lazy to run your program");
     } else if(firstLine.equals("#lang std20")) {
       return STD20;
     } else if(firstLine.equals("#lang magic")) {

@@ -3,6 +3,7 @@ package dev.wateralt.mc.weapontroll.asm.std20;
 import dev.wateralt.mc.weapontroll.Util;
 import dev.wateralt.mc.weapontroll.asm.AsmError;
 import dev.wateralt.mc.weapontroll.asm.ExecContext;
+import dev.wateralt.mc.weapontroll.mixin.FireballEntityAccessor;
 import dev.wateralt.mc.weapontroll.mixin.ServerPlayerEntityAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -262,6 +263,13 @@ public class Instructions {
     ctx.useEnergyAt(pos, EnergyCosts.EXPLODE_COST_FACTOR * Math.pow(EnergyCosts.EXPLODE_COST_BASE, power));
     ctx.world().createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), (float)power, World.ExplosionSourceType.MOB);
   }
+  public static void fireballpwr(Std20ProgramState state, Entity ent, double power) {
+    if(ent instanceof FireballEntity fireball) {
+      state.getContext().useEnergyAt(ent.getPos(), EnergyCosts.EXPLODE_COST_BASE * Math.pow(EnergyCosts.EXPLODE_COST_BASE, power));
+      power = Math.clamp(power, 0.0, 6.0);
+      ((FireballEntityAccessor) fireball).setExplosionPower((int)Math.round(power));
+    }
+  }
   public static void lightning(Std20ProgramState state, Vec3d pos) {
     ExecContext ctx = state.getContext();
     ctx.useEnergyAt(pos, EnergyCosts.LIGHTNING_COST);
@@ -284,7 +292,7 @@ public class Instructions {
       case "skeleton" -> summonedEntity = new SkeletonEntity(EntityType.SKELETON, ctx.world());
       case "arrow" -> summonedEntity = new ArrowEntity(EntityType.ARROW, ctx.world());
       case "snowball" -> summonedEntity = new SnowballEntity(EntityType.SNOWBALL, ctx.world());
-      case "fireball" -> summonedEntity = new FireballEntity(EntityType.FIREBALL, ctx.world());
+      case "fireball" -> summonedEntity = new FireballEntity(ctx.world(), ctx.user(), Vec3d.ZERO, 0);
       default -> throw new RuntimeException("unreachable");
     }
     summonedEntity.setPosition(pos);

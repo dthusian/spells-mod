@@ -6,6 +6,7 @@
   "mixins": [
     "BrewingStandBlockEntityMixin",
     "EntityMixin",
+    "FireballEntityAccessor",
     "FireballEntityMixin",
     "ItemMixin",
     "MinecraftServerMixin",
