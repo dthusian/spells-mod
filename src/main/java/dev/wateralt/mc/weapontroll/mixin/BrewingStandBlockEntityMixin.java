@@ -30,6 +30,8 @@ public abstract class BrewingStandBlockEntityMixin {
         nbt.putInt("weapontroll_mana", EnergySources.INVIS_POT);
         NbtComponent comp = NbtComponent.of(nbt);
         slots.get(i).set(DataComponentTypes.CUSTOM_DATA, comp);
+      } else {
+        slots.get(i).remove(DataComponentTypes.CUSTOM_DATA);
       }
     }
   }
