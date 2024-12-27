@@ -30,7 +30,7 @@ public abstract class MinecraftServerMixin {
     BossBarManager bbm = that.getBossBarManager();
     List<Identifier> bossbarIds = new ArrayList<>(bbm.getIds());
     bossbarIds.forEach(v -> {
-      if(v.getPath().startsWith("weapontroll_energybar.")) {
+      if(v.getPath().startsWith("weapontroll")) {
         bbm.remove(bbm.get(v));
       }
     });

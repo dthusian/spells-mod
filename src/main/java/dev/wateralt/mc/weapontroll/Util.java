@@ -58,6 +58,10 @@ public class Util {
     return new BlockPos((int)Math.floor(vec.getX()), (int)Math.floor(vec.getY()), (int)Math.floor(vec.getZ()));
   }
   
+  public static Vec3d posToVec(BlockPos pos) {
+    return new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+  }
+  
   public static double normal(double x) {
     return Math.sqrt(2) * Math.tan(2 * x - 1);
   }

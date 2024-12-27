@@ -2,10 +2,13 @@ package dev.wateralt.mc.weapontroll.energy;
 
 import dev.wateralt.mc.weapontroll.asm.AsmError;
 import dev.wateralt.mc.weapontroll.asm.std20.EnergyCosts;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.ReadableScoreboardScore;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -94,6 +97,15 @@ public class EnergyUtil {
   }
 
   public static int computeMaxEnergy(ServerPlayerEntity spl) {
+    ItemStack it = spl.getInventory().getArmorStack(1);
+    RegistryEntry<Enchantment> attunement = spl.getRegistryManager()
+      .getOptional(RegistryKeys.ENCHANTMENT)
+      .flatMap(v -> v.getEntry(Identifier.of("weapontroll", "attunement")))
+      .get();
+    if(!it.isEmpty()) {
+      int attunementLevel = it.getEnchantments().getLevel(attunement);
+      return 1000 + attunementLevel * attunementLevel * 50;
+    }
     return 1000;
   }
 }

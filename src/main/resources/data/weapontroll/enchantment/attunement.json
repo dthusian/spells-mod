@@ -1,0 +1,24 @@
+{
+  "description": {
+    "text": "Attunement"
+  },
+  "supported_items": [
+    "#minecraft:chest_armor"
+  ],
+  "primary_items": [],
+  "weight": 1,
+  "max_level": 3,
+  "min_cost": {
+    "base": 1,
+    "per_level_above_first": 0
+  },
+  "max_cost": {
+    "base": 1,
+    "per_level_above_first": 0
+  },
+  "anvil_cost": 999999999,
+  "slots": [
+    "armor"
+  ],
+  "effects": {}
+}
