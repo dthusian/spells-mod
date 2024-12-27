@@ -3,6 +3,8 @@ package dev.wateralt.mc.weapontroll.mixin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.conversion.EntityConversionContext;
+import net.minecraft.entity.conversion.EntityConversionType;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -39,7 +41,7 @@ public abstract class EntityMixin {
   private void teleportCrossDimension(ServerWorld world, TeleportTarget teleportTarget, CallbackInfoReturnable<Entity> cir) {
     Object that = this;
     if(that instanceof GuardianEntity thatEnt) {
-      thatEnt.setPosition(new Vec3d(0, -100, 0));
+      thatEnt.remove(Entity.RemovalReason.CHANGED_DIMENSION);
       cir.setReturnValue((Entity) that);
       cir.cancel();
     }
@@ -48,6 +50,9 @@ public abstract class EntityMixin {
   /// Transform guardians
   @Inject(method = "onStruckByLightning", at = @At("HEAD"))
   private void onStruckByLightning(ServerWorld world, LightningEntity lightning, CallbackInfo ci) {
-    
+    Entity that = (Entity)(Object) this;
+    if(that instanceof GuardianEntity guardian && that.getType() == EntityType.GUARDIAN) {
+      guardian.convertTo(EntityType.ELDER_GUARDIAN, EntityConversionContext.create(guardian, false, false), v -> {});
+    }
   }
 }

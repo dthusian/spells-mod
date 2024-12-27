@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "111",
+    "121",
+    "111"
+  ],
+  "key": {
+    "1": "minecraft:sponge",
+    "2": "minecraft:popped_chorus_fruit"
+  },
+  "result": {
+    "id": "minecraft:cookie",
+    "count": 1,
+    "components": {
+      "minecraft:custom_data": {
+        "weapontroll_mana": 500
+      },
+      "minecraft:food": {
+        "nutrition": 1,
+        "saturation": 1,
+        "can_always_eat": true
+      },
+      "minecraft:lore": [
+        "{\"text\":\"Restores 500 mana\",\"color\":\"dark_purple\"}"
+      ],
+      "minecraft:item_name": "{\"text\":\"Sponge Cake\"}"
+    }
+  }
+}
