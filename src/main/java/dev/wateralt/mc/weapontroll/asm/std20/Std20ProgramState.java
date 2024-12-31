@@ -14,17 +14,20 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Std20ProgramState implements Program.State {
+  private static final int INSTRUCTIONS_PER_TICK = 100;
+  private static final long MAX_RUNTIME = 20 * 60 * 60;
+  long startTick;
   Std20Program program;
   ExecContext ctx;
-  int instructionsLeft;
   int pc;
   Object[] slots;
   Optional<Integer> wait;
+  boolean finished;
 
-  public Std20ProgramState(Std20Program program, ExecContext ctx, int maxSlots, int instructionLimit) {
+  public Std20ProgramState(Std20Program program, ExecContext ctx, int maxSlots) {
     this.program = program;
+    this.startTick = ctx.world().getTime();
     this.ctx = ctx;
-    this.instructionsLeft = instructionLimit;
     this.pc = 0;
     this.slots = new Object[maxSlots];
     this.slots[0] = ctx.user();
@@ -33,7 +36,6 @@ public class Std20ProgramState implements Program.State {
 
   public Std20Program getProgram() { return program; }
   public ExecContext getContext() { return ctx; }
-  public int getInstructionsLeft() { return instructionsLeft; }
 
   public void jumpTo(String label) {
     pc = this.program.getLabels().get(label);
@@ -84,10 +86,16 @@ public class Std20ProgramState implements Program.State {
 
   @Override
   public int run() {
+    if(startTick + MAX_RUNTIME < ctx.world().getTime()) {
+      finished = true;
+      return 0;
+    }
+    
+    ctx.useEnergy(1);
     wait = Optional.empty();
-    while(instructionsLeft > 0) {
+    int i;
+    for(i = 0; i < INSTRUCTIONS_PER_TICK; i++) {
       if(pc >= program.getInstrs().size()) {
-        instructionsLeft = 0;
         break;
       }
       Instruction instr = program.getInstrs().get(pc);
@@ -134,7 +142,6 @@ public class Std20ProgramState implements Program.State {
         }
 
         pc++;
-        instructionsLeft--;
         
         if(wait.isPresent()) {
           return wait.get();
@@ -143,12 +150,12 @@ public class Std20ProgramState implements Program.State {
         throw new AsmError("at pc %d (`%s`): %s".formatted(pc, instr.toString(), err.getMessage()));
       }
     }
-    return 0;
+    return 1;
   }
 
   @Override
   public boolean isFinished() {
-    return this.instructionsLeft == 0;
+    return finished;
   }
   
   public void setWait(int x) {

@@ -69,6 +69,6 @@ public class Std20Program implements Program {
   
   @Override
   public Std20ProgramState prepareRun(ExecContext ctx) {
-    return new Std20ProgramState(this, ctx, maxSlots, 1024);
+    return new Std20ProgramState(this, ctx, maxSlots);
   }
 }

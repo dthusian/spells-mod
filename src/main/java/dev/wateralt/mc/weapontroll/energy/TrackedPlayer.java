@@ -42,7 +42,7 @@ public class TrackedPlayer {
     return false;
   }
   
-  private CommandBossBar getOrCreateBar(ServerPlayerEntity spl, Text energyStr, int energy, int maxEnergy) {
+  private CommandBossBar getOrCreateBar(ServerPlayerEntity spl, Text energyStr, int energy) {
     BossBarManager bbm = server.getBossBarManager();
     Identifier id = Identifier.of("weapontroll:weapontroll_energybar." + uuid.toString());
     CommandBossBar bar = bbm.get(id);
@@ -51,7 +51,7 @@ public class TrackedPlayer {
       bar.setColor(BossBar.Color.BLUE);
       bar.addPlayer(spl);
     }
-    bar.setMaxValue(maxEnergy);
+    bar.setMaxValue(10000);
     bar.setValue(energy);
     bar.setName(energyStr);
     bar.setVisible(true);
@@ -81,9 +81,8 @@ public class TrackedPlayer {
     
     if(spl != null && !spl.isDisconnected() && displayEnergyBarTicks > 0) {
       int energy = EnergyUtil.getEnergy(spl);
-      int maxEnergy = EnergyUtil.computeMaxEnergy(spl);
-      Text energyStr = Text.of(formatEnergy(energy, maxEnergy));
-      getOrCreateBar(spl, energyStr, energy, maxEnergy);
+      Text energyStr = Text.of(formatEnergy(energy));
+      getOrCreateBar(spl, energyStr, energy);
     } else if(spl != null) {
       hideBarIfExist(spl);
     }
@@ -93,7 +92,7 @@ public class TrackedPlayer {
     }
   }
   
-  public String formatEnergy(int energy, int maxEnergy) {
-    return "Energy %d / %d".formatted(energy, maxEnergy);
+  public String formatEnergy(int energy) {
+    return "Energy: %d".formatted(energy);
   }
 }

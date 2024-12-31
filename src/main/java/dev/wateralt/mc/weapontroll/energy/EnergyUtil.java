@@ -51,8 +51,7 @@ public class EnergyUtil {
   }
   
   public static void addEnergy(ServerPlayerEntity spl, int amount) {
-    int oldEnergy = getEnergy(spl);
-    setEnergy(spl, Math.min(oldEnergy + amount, Math.max(computeMaxEnergy(spl), oldEnergy)));
+    addEnergyIgnoringLimit(spl, amount);
   }
   
   public static void addEnergyIgnoringLimit(ServerPlayerEntity spl, int amount) {
@@ -94,18 +93,5 @@ public class EnergyUtil {
       );
     }
     return obj;
-  }
-
-  public static int computeMaxEnergy(ServerPlayerEntity spl) {
-    ItemStack it = spl.getInventory().getArmorStack(1);
-    RegistryEntry<Enchantment> attunement = spl.getRegistryManager()
-      .getOptional(RegistryKeys.ENCHANTMENT)
-      .flatMap(v -> v.getEntry(Identifier.of("weapontroll", "attunement")))
-      .get();
-    if(!it.isEmpty()) {
-      int attunementLevel = it.getEnchantments().getLevel(attunement);
-      return 1000 + attunementLevel * attunementLevel * 50;
-    }
-    return 1000;
   }
 }
