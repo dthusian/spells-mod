@@ -141,7 +141,7 @@ public class Instructions {
   public static Entity findent(Std20ProgramState state, Vec3d pos, double slot) {
     ExecContext ctx = state.getContext();
     Box box = new Box(pos.add(-4, -4, -4), pos.add(4, 4, 4));
-    List<Entity> list = ctx.world().getEntitiesByType(TypeFilter.instanceOf(Entity.class), box, EntityPredicates.VALID_LIVING_ENTITY);
+    List<Entity> list = ctx.world().getEntitiesByType(TypeFilter.instanceOf(Entity.class), box, EntityPredicates.VALID_ENTITY);
     list.sort((a, b) -> (int) Math.signum(a.getPos().distanceTo(pos) - b.getPos().distanceTo(pos)));
 
     int slotInt = (int)slot;
