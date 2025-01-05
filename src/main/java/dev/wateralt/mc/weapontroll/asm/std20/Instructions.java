@@ -145,6 +145,7 @@ public class Instructions {
     list.sort((a, b) -> (int) Math.signum(a.getPos().distanceTo(pos) - b.getPos().distanceTo(pos)));
 
     int slotInt = (int)slot;
+    System.out.println("findent idx: " + slotInt);
     if(slotInt < list.size()) {
       return list.get((int)slot);
     } else {

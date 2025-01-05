@@ -96,6 +96,7 @@ public class Std20ProgramState implements Program.State {
     int i;
     for(i = 0; i < INSTRUCTIONS_PER_TICK; i++) {
       if(pc >= program.getInstrs().size()) {
+        finished = true;
         break;
       }
       Instruction instr = program.getInstrs().get(pc);
