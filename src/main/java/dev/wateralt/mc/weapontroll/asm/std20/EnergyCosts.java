@@ -31,5 +31,5 @@ public class EnergyCosts {
   public static double HP_PER_ENERGY_DEPLETED = 0.2;
   
   // Threshold for "far" interactions that cost extra
-  public static int LOCAL_RADIUS = 8;
+  public static int LOCAL_RADIUS = 32;
 }

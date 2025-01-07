@@ -67,6 +67,12 @@ public class Instructions {
   public static double sqrt(Std20ProgramState state, double a) {
     return Math.sqrt(a);
   }
+  public static double floor(Std20ProgramState state, double a) {
+    return Math.floor(a);
+  }
+  public static double ceil(Std20ProgramState state, double a) {
+    return Math.ceil(a);
+  }
   public static double sin(Std20ProgramState state, double a) {
     return Math.sin(a);
   }
@@ -163,9 +169,6 @@ public class Instructions {
   }
   public static double checkblock(Std20ProgramState state, Vec3d pos, String block) {
     ExecContext ctx = state.getContext();
-    if(pos.distanceTo(ctx.targetPos()) > EnergyCosts.LOCAL_RADIUS) {
-      ctx.useEnergyAt(pos, 1);
-    }
     BlockPos blockPos = Util.vecToPos(pos);
     if(ctx.world()
       .getBlockState(blockPos)
