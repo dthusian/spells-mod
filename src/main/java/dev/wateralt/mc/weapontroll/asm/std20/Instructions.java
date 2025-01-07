@@ -25,6 +25,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
@@ -45,6 +46,23 @@ public class Instructions {
   public static double isnull(Std20ProgramState state, Object val) { 
     if(val == null) return 1.0;
     else return 0.0;
+  }
+  public static void print(Std20ProgramState state, Object val) {
+    String str = null;
+    if(val == null) {
+      str = "<null>";
+    } else if(val instanceof Entity ent) {
+      str = "Entity(%s)".formatted(ent.getName().getString());
+    } else if(val instanceof Vec3d vec) {
+      str = "Vector" + vec;
+    } else if(val instanceof Double dbl) {
+      str = "Double(%f)".formatted(dbl);
+    } else {
+      str = "<unknown>";
+    }
+    if(state.getContext().user() instanceof ServerPlayerEntity spe && str != null) {
+      spe.sendMessage(Text.of("program: " + str));
+    }
   }
   
   // Number manip instrs
