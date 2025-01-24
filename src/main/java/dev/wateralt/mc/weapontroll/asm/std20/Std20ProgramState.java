@@ -60,8 +60,8 @@ public class Std20ProgramState implements Program.State {
   }
   
   private boolean typesCompatible(Object obj, Class<?> clazz) {
-    if(obj == null && clazz != Object.class) {
-      return false;
+    if(obj == null) {
+      return clazz == Object.class;
     }
     Class<?> cb = obj.getClass();
     if(clazz.isAssignableFrom(cb)) {
@@ -91,7 +91,6 @@ public class Std20ProgramState implements Program.State {
       return 0;
     }
     
-    ctx.useEnergy(1);
     wait = Optional.empty();
     int i;
     for(i = 0; i < INSTRUCTIONS_PER_TICK; i++) {

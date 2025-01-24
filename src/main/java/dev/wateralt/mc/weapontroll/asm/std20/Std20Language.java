@@ -7,6 +7,6 @@ import java.util.List;
 public class Std20Language implements Language {
   @Override
   public Std20Program compile(List<String> source) {
-    return new Std20Program(String.join("\n", source), 16);
+    return new Std20Program(String.join("\n", source), 128);
   }
 }

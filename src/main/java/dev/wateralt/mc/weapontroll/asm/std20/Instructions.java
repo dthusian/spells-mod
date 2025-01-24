@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.ChickenEntity;
@@ -159,6 +160,54 @@ public class Instructions {
   }
   public static Vec3d vcross(Std20ProgramState state, Vec3d a, Vec3d b) {
     return a.crossProduct(b);
+  }
+  
+  // String manip instrs
+  public static double slength(Std20ProgramState state, String a) {
+    return a.length();
+  }
+  public static String scharat(Std20ProgramState state, String a, double x) {
+    int idx = (int)Math.floor(x);
+    if(idx < 0 || idx >= a.length()) {
+      throw new AsmError("String index out of bounds");
+    }
+    return a.substring(idx, idx + 1);
+  }
+  
+  public static double scodeat(Std20ProgramState state, String a, double x) {
+    int idx = (int)Math.floor(x);
+    if(idx < 0 || idx >= a.length()) {
+      throw new AsmError("String index out of bounds");
+    }
+    return a.codePointAt(idx);
+  }
+  
+  public static String ssubstr(Std20ProgramState state, String s, double start, double end) {
+    int si = (int)Math.floor(start);
+    int ei = (int)Math.floor(end);
+    if(si < 0 || si >= s.length() || ei < 0 || ei >= s.length()) {
+      throw new AsmError("String index out of bounds");
+    }
+    if(si > ei) {
+      throw new AsmError("Start index must be less than end index");
+    }
+    return s.substring(si, ei);
+  }
+  
+  public static String sconcat(Std20ProgramState state, String a, String b) {
+    return a + b;
+  }
+  
+  public static double ssearch(Std20ProgramState state, String a, String b) {
+    return a.indexOf(b);
+  }
+  
+  public static double scmp(Std20ProgramState state, String a, String b) {
+    return Math.clamp(a.compareTo(b), -1, 1);
+  }
+  
+  public static String sify(Std20ProgramState state, Object x) {
+    return Objects.toString(x);
   }
   
   // World query instrs
@@ -323,5 +372,12 @@ public class Instructions {
   }
   public static void wait(Std20ProgramState state, double ticks) {
     state.setWait((int)ticks);
+  }
+  public static void print(Std20ProgramState state, String x) {
+    Text msg = Text.of("[std20] " + x);
+    LivingEntity caster = state.getContext().user();
+    if(caster instanceof ServerPlayerEntity spe) {
+      spe.sendMessage(msg);
+    }
   }
 }

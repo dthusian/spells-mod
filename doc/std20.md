@@ -71,13 +71,25 @@ The syntax `<T> = ` before an instruction indicates the instruction returns `T`.
 - `<number> = vdot <a: vector> <b: vector>` Computes dot product of two vectors.
 - `<vector> = vcross <a: vector> <b: vector>` Computes cross product of two vectors.
 
+### String Instructions
+
+- `<number> = slength <s: string>` get length of string
+- `<string> = scharat <s: string> <idx: number>` get char at index
+- `<number> = scodeat <s: string> <idx: number>` get utf-16 codepoint at index
+- `<string> = ssubstr <s: string> <start: number> <end: number>` - make substring of string
+- `<string> = sconcat <a: string> <b: string>` concatenate strings
+- `<number> = ssearch <a: string> <b: string>` return index of first instance of `b` in `a`, or -1 if none exist
+- `<number> = scmp <a: string> <b: string>` return -1 if a < b, 1 if a > b, 0 if a == b
+- `<string> = sify <x: object>` converts a value to string
+- `print <a: string>` print a string to your chat
+
 ### Jump Instructions
 
 - `label <name: string>` Does nothing, but is used to refer to locations in the program for jumping.
 - `jmpl <label: string> <a: number> <b: number>` Jumps to the label named `label` if `a` is less than `b`.
 - `jmple <label: string> <a: number> <b: number>` Jumps to the label named `label` if `a` is less than or equal to `b`.
-- `jmpg <label: string> <a: number> <b: number>` Jumps to the label named `label` if `a` is less than `b`.
-- `jmpge <label: string> <a: number> <b: number>` Jumps to the label named `label` if `a` is less than or equal to `b`.
+- `jmpg <label: string> <a: number> <b: number>` Jumps to the label named `label` if `a` is greater than `b`.
+- `jmpge <label: string> <a: number> <b: number>` Jumps to the label named `label` if `a` is greater than or equal to `b`.
 - `jmpe <label: string> <a: slot> <b: slot>` Jumps to the label named `label` if `a` is equal to `b`. Works on
   numbers, vectors, and entities.
 
