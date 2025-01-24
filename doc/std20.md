@@ -92,6 +92,8 @@ The syntax `<T> = ` before an instruction indicates the instruction returns `T`.
 - `jmpge <label: string> <a: number> <b: number>` Jumps to the label named `label` if `a` is greater than or equal to `b`.
 - `jmpe <label: string> <a: slot> <b: slot>` Jumps to the label named `label` if `a` is equal to `b`. Works on
   numbers, vectors, and entities.
+- `jmpne <label: string> <a: slot> <b: slot>` Jumps to the label named `label` if `a` is not equal to `b`. Works on
+  numbers, vectors, and entities.
 
 ### World Querying Instructions
 
