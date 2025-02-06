@@ -28,6 +28,8 @@ is scaled by `1+0.001*(r-8)^2`, where `r` is the distance to user.
 ## Instructions
 
 Instructions are of the form `[<slot> = ] <instruction> [<argument 1>] [<argument 2>] ...`.
+Comments are any line that starts with `#`. You cannot put a comment
+after an instruction on the same line.
 
 Instructions are listed as `name` followed by parameters.
 `<x: T>` indicates a parameter named `x`, with type `T`.
@@ -113,7 +115,7 @@ The syntax `<T> = ` before an instruction indicates the instruction returns `T`.
     - Costs `dmg^2` energy, rounded up.
 - `mountent <bottom: entity> <top: entity>` Makes the `top` entity ride the `bottom` entity.
     - Costs 0 energy.
-- `fireballpwr <fireball: entity> <power: double>` Adds explosion power to the fireball,
+- `fireballpwr <fireball: entity> <power: double>` Sets explosion power to the fireball
     - Costs `10*2^power` energy, rounded up.
     - `power` is capped to 6.0
 - `explode <pos: vector> <power: number>` Creates an explosion at `pos` with power `power`.

@@ -114,7 +114,7 @@ public class Instructions {
   }
 
   public static void jmpge(Std20ProgramState state, String label, double a, double b) {
-    if(a > b) state.jumpTo(label);
+    if(a >= b) state.jumpTo(label);
   }
   public static void jmpe(Std20ProgramState state, String label, Object a, Object b) {
     if(Objects.equals(a, b)) state.jumpTo(label);
