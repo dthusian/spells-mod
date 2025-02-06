@@ -49,7 +49,7 @@ public class Instructions {
     else return 0.0;
   }
   public static void print(Std20ProgramState state, Object val) {
-    String str = null;
+    String str;
     if(val == null) {
       str = "<null>";
     } else if(val instanceof Entity ent) {
@@ -58,6 +58,8 @@ public class Instructions {
       str = "Vector" + vec;
     } else if(val instanceof Double dbl) {
       str = "Double(%f)".formatted(dbl);
+    } else if(val instanceof String s) {
+      str = s;
     } else {
       str = "<unknown>";
     }
