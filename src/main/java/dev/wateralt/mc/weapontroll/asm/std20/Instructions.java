@@ -394,11 +394,4 @@ public class Instructions {
   public static void wait(Std20ProgramState state, double ticks) {
     state.setWait((int)ticks);
   }
-  public static void print(Std20ProgramState state, String x) {
-    Text msg = Text.of("[std20] " + x);
-    LivingEntity caster = state.getContext().user();
-    if(caster instanceof ServerPlayerEntity spe) {
-      spe.sendMessage(msg);
-    }
-  }
 }

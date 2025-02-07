@@ -116,7 +116,7 @@ The syntax `<T> = ` before an instruction indicates the instruction returns `T`.
     - Costs `dmg^2` energy, rounded up.
 - `mountent <bottom: entity> <top: entity>` Makes the `top` entity ride the `bottom` entity.
     - Costs 0 energy.
-- `fireballpwr <fireball: entity> <power: double>` Sets explosion power to the fireball
+- `fireballpwr <fireball: entity> <power: number>` Sets explosion power to the fireball
     - Costs `10*2^power` energy, rounded up.
     - `power` is capped to 6.0
 - `explode <pos: vector> <power: number>` Creates an explosion at `pos` with power `power`.
