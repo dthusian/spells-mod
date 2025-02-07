@@ -83,6 +83,7 @@ The syntax `<T> = ` before an instruction indicates the instruction returns `T`.
 - `<number> = ssearch <a: string> <b: string>` return index of first instance of `b` in `a`, or -1 if none exist
 - `<number> = scmp <a: string> <b: string>` return -1 if a < b, 1 if a > b, 0 if a == b
 - `<string> = sify <x: object>` converts a value to string
+- `<string> = sifyd <x: object>` converts a value to a more complete representation for debugging
 - `print <a: object>` print a string to your chat
 
 ### Jump Instructions

@@ -49,21 +49,8 @@ public class Instructions {
     else return 0.0;
   }
   public static void print(Std20ProgramState state, Object val) {
-    String str;
-    if(val == null) {
-      str = "<null>";
-    } else if(val instanceof Entity ent) {
-      str = "Entity(%s)".formatted(ent.getName().getString());
-    } else if(val instanceof Vec3d vec) {
-      str = "Vector" + vec;
-    } else if(val instanceof Double dbl) {
-      str = "Double(%f)".formatted(dbl);
-    } else if(val instanceof String s) {
-      str = s;
-    } else {
-      str = "<unknown>";
-    }
-    if(state.getContext().user() instanceof ServerPlayerEntity spe && str != null) {
+    if(state.getContext().user() instanceof ServerPlayerEntity spe) {
+      String str = sifyd(state, val);
       spe.sendMessage(Text.of("program: " + str));
     }
   }
@@ -208,8 +195,40 @@ public class Instructions {
     return Math.clamp(a.compareTo(b), -1, 1);
   }
   
-  public static String sify(Std20ProgramState state, Object x) {
-    return Objects.toString(x);
+  public static String sify(Std20ProgramState state, Object val) {
+    String str;
+    if(val == null) {
+      str = "null";
+    } else if(val instanceof Entity ent) {
+      str = ent.getName().getString();
+    } else if(val instanceof Vec3d vec) {
+      str = "[%f, %f, %f]".formatted(vec.getX(), vec.getY(), vec.getZ());
+    } else if(val instanceof Double dbl) {
+      str = Double.toString(dbl);
+    } else if(val instanceof String s) {
+      str = s;
+    } else {
+      str = "object";
+    }
+    return str;
+  }
+  
+  public static String sifyd(Std20ProgramState state, Object val) {
+    String str;
+    if(val == null) {
+      str = "<null>";
+    } else if(val instanceof Entity ent) {
+      str = "Entity(%s)".formatted(ent.getName().getString());
+    } else if(val instanceof Vec3d vec) {
+      str = "Vector" + vec;
+    } else if(val instanceof Double dbl) {
+      str = "Double(%f)".formatted(dbl);
+    } else if(val instanceof String s) {
+      str = s;
+    } else {
+      str = "<unknown>";
+    }
+    return str;
   }
   
   // World query instrs
