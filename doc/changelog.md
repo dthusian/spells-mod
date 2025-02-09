@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.5
+
+- Fixed a bug where eating spongecake ate the entire stack, while only giving
+  you mana for one item
+
 ## 1.1.4
 
 - Started tracking changelog

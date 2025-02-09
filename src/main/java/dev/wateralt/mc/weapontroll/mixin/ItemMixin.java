@@ -46,7 +46,12 @@ public abstract class ItemMixin {
           } else if(stack.getItem().equals(Items.POTION)) {
             cir.setReturnValue(new ItemStack(Items.GLASS_BOTTLE, 1));
           } else {
-            cir.setReturnValue(ItemStack.EMPTY);
+            stack.decrement(1);
+            if(stack.isEmpty()) {
+              cir.setReturnValue(ItemStack.EMPTY);
+            } else {
+              cir.setReturnValue(stack);
+            }
           }
           cir.cancel();
         }
