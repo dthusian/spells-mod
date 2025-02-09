@@ -16,7 +16,6 @@ public class ExecContext {
   private ServerWorld world;
   private LivingEntity user;
   private LivingEntity target;
-  private Vec3d targetPos;
   private Vec3d direction;
   @Nullable
   private ServerPlayerEntity manaSource;
@@ -28,7 +27,6 @@ public class ExecContext {
     if(user instanceof ServerPlayerEntity spe) {
       manaSource = spe;
     }
-    this.targetPos = targetPos;
     this.direction = direction;
   }
 
@@ -45,7 +43,7 @@ public class ExecContext {
   }
 
   public Vec3d targetPos() {
-    return targetPos;
+    return target.getPos();
   }
 
   public ServerPlayerEntity manaSource() {
@@ -55,7 +53,6 @@ public class ExecContext {
 
   public void setTarget(LivingEntity target) {
     this.target = target;
-    this.targetPos = target.getPos();
   }
   
   public void useEnergy(double energy) {
@@ -65,7 +62,7 @@ public class ExecContext {
   }
 
   public void useEnergyAt(Vec3d pos, double amount) {
-    double dist = targetPos.distanceTo(pos);
+    double dist = target.getPos().distanceTo(pos);
     double factor;
     if(dist <= EnergyCosts.LOCAL_RADIUS) {
       factor = 1;
@@ -73,5 +70,9 @@ public class ExecContext {
       factor = 1 + 0.001 * Math.pow(dist - EnergyCosts.LOCAL_RADIUS, 2);
     }
     useEnergy(factor * amount);
+  }
+  
+  public boolean inBannedLocation() {
+    return target.getWorld().getRegistryKey().getValue().toString().equals("minecraft:the_end") && target.getPos().distanceTo(new Vec3d(0, 100, 0)) < 600.0;
   }
 }

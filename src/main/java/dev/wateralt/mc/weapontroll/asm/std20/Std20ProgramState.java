@@ -1,10 +1,12 @@
 package dev.wateralt.mc.weapontroll.asm.std20;
 
 import com.google.common.collect.Streams;
+import dev.wateralt.mc.weapontroll.Weapontroll;
 import dev.wateralt.mc.weapontroll.asm.AsmError;
 import dev.wateralt.mc.weapontroll.asm.Program;
 import dev.wateralt.mc.weapontroll.asm.ExecContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 import java.lang.reflect.InvocationTargetException;
@@ -89,6 +91,15 @@ public class Std20ProgramState implements Program.State {
     if(startTick + MAX_RUNTIME < ctx.world().getTime()) {
       finished = true;
       return 0;
+    }
+    if(ctx.user() instanceof ServerPlayerEntity spe) {
+      if(spe.isDisconnected() || spe.isRemoved()) {
+        finished = true;
+        return 0;
+      }
+    }
+    if(ctx.inBannedLocation()) {
+      throw new AsmError("Magic doesn't work here...");
     }
     
     wait = Optional.empty();

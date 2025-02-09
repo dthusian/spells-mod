@@ -330,6 +330,7 @@ public class Instructions {
     BlockState target = ctx.world().getBlockState(blockPos);
     if(target.isReplaceable()) {
       // actually do the stuff
+      ctx.useEnergyAt(pos, EnergyCosts.PLACE_COST_FACTOR * Math.max(Math.ceil(bi.getBlock().getHardness()), 1.0));
       ctx.world().setBlockState(blockPos, bi.getBlock().getDefaultState(), Block.NOTIFY_ALL);
       if(!creative) {
         for(int i = 0; i < inv.size(); i++) {
@@ -339,14 +340,15 @@ public class Instructions {
           }
         }
       }
-      ctx.useEnergyAt(pos, EnergyCosts.PLACE_COST_FACTOR * Math.max(Math.ceil(bi.getBlock().getHardness()), 1.0));
     }
   }
   public static void destroyblock(Std20ProgramState state, Vec3d pos) {
     ExecContext ctx = state.getContext();
     BlockPos blockPos = Util.vecToPos(pos);
     BlockState blockState = ctx.world().getBlockState(blockPos);
-    ctx.useEnergyAt(pos, EnergyCosts.DESTROY_COST_FACTOR * Math.max(Math.ceil(blockState.getBlock().getHardness()), 1.0));
+    float hardness = blockState.getBlock().getHardness();
+    if(hardness < 0) return;
+    ctx.useEnergyAt(pos, EnergyCosts.DESTROY_COST_FACTOR * Math.max(Math.ceil(hardness), 1.0));
     ctx.world().breakBlock(blockPos, true, ctx.user());
   }
   public static void explode(Std20ProgramState state, Vec3d pos, double power) {
