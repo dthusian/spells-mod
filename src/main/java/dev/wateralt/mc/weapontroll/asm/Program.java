@@ -8,6 +8,8 @@ public interface Program {
     int run();
     /// Whether the function is finished executing.
     boolean isFinished();
+    /// Returns the associated ExecContext
+    ExecContext getContext();
   }
   State prepareRun(ExecContext context);
 }

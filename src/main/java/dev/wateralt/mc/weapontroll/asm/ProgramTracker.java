@@ -1,5 +1,9 @@
 package dev.wateralt.mc.weapontroll.asm;
 
+import dev.wateralt.mc.weapontroll.Weapontroll;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,12 +26,25 @@ public class ProgramTracker {
   }
   
   public void run(Program.State state) {
-    if(state.isFinished()) {
-      return;
-    }
-    int wait = state.run();
-    if(!state.isFinished() && wait != 0) {
-      this.schedule(state, wait);
+    ExecContext ctx = state.getContext();
+    try {
+      if(state.isFinished()) {
+        return;
+      }
+      int wait = state.run();
+      if(!state.isFinished() && wait != 0) {
+        this.schedule(state, wait);
+      }
+    } catch(AsmError err) {
+      if(ctx.user() instanceof ServerPlayerEntity spe) {
+        spe.sendMessage(Text.of("Program failed: " + err.getMessage()));
+      }
+    } catch(Exception err) {
+      if(ctx.user() instanceof ServerPlayerEntity spe) {
+        spe.sendMessage(Text.of("Program failed with an unknown error"));
+      }
+      Weapontroll.LOGGER.warn("Exception occurred while executing program: " + err);
+      err.printStackTrace();
     }
   }
   

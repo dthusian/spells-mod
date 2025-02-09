@@ -51,4 +51,9 @@ public class MagicProgramState implements Program.State {
   public boolean isFinished() {
     return pc == program.getInstructions().length;
   }
+
+  @Override
+  public ExecContext getContext() {
+    return ctx;
+  }
 }

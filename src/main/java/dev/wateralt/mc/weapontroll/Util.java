@@ -24,6 +24,7 @@ import java.util.List;
 public class Util {
   public static void executeString(List<String> src, ExecContext ctx) {
     if(!ctx.user().isAlive()) return;
+    Program.State state;
     try {
       if(src.isEmpty()) {
         return;
@@ -31,18 +32,18 @@ public class Util {
       Language lang = Languages.identify(src.get(0));
       if(lang != null) {
         Program prog = lang.compile(src);
-        Program.State state = prog.prepareRun(ctx);
-        Weapontroll.PROGRAM_TRACKER.run(state);;
+        state = prog.prepareRun(ctx);
+        Weapontroll.PROGRAM_TRACKER.run(state);
       }
     } catch(AsmError err) {
       if(ctx.user() instanceof ServerPlayerEntity spe) {
-        spe.sendMessage(Text.of("Program failed: " + err.getMessage()));
+        spe.sendMessage(Text.of("Program compile failed: " + err.getMessage()));
       }
     } catch(Exception err) {
       if(ctx.user() instanceof ServerPlayerEntity spe) {
-        spe.sendMessage(Text.of("Program failed with an unknown error"));
+        spe.sendMessage(Text.of("Program compile failed with an unknown error"));
       }
-      Weapontroll.LOGGER.warn("Exception occurred while executing program: " + err);
+      Weapontroll.LOGGER.warn("Exception occurred while compiling program: " + err);
       err.printStackTrace();
     }
   }
