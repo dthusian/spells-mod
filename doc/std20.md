@@ -115,7 +115,8 @@ The syntax `<T> = ` before an instruction indicates the instruction returns `T`.
 - `damageent <ent: entity> <dmg: number>` Hits `ent` for `dmg` damage.
     - Costs `dmg^2` energy, rounded up.
 - `mountent <bottom: entity> <top: entity>` Makes the `top` entity ride the `bottom` entity.
-    - Costs 0 energy.
+    - Costs 1 energy per block of distance between bottom and top. Does not have locality cost applied
+      (i.e. )
 - `fireballpwr <fireball: entity> <power: number>` Sets explosion power to the fireball
     - Costs `10*2^power` energy, rounded up.
     - `power` is capped to 6.0
