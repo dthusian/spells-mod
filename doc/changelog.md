@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.6
+
+- Implemented mana transfer
+- (std20) fixed the error message associated with the errors from wrong numbers of arguments
+
 ## 1.1.5
 
 - Fixed a bug where eating spongecake ate the entire stack, while only giving

@@ -78,7 +78,7 @@ public class Std20ProgramState implements Program.State {
   
   private void typeCheck(Object[] args, Class<?>[] argTypes) {
     if(args.length != argTypes.length) {
-      throw new AsmError("Expected %d arguments, found %d".formatted(args.length - 1, argTypes.length - 1));
+      throw new AsmError("Expected %d arguments, found %d".formatted(argTypes.length - 1, args.length - 1));
     }
     for(int i = 1; i < args.length; i++) {
       if(!typesCompatible(args[i], argTypes[i])) {
